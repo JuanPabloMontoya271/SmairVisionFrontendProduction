@@ -40,7 +40,10 @@ class App extends Component {
 
   constructor(props){
     super(props);
-
+    this.state = {
+      imgData: '',
+      imgRawData: ''
+    }
     //Reacts dicom-img element reference to load image
     this.dicomImg = null;
   }
@@ -64,6 +67,21 @@ class App extends Component {
     cornerstone.loadImage(imgId).then((image)=>{
       //Displays image
       cornerstone.displayImage(this.dicomImg, image)
+      this.setState({
+        imgData: image,
+        imgRawData: image.data
+      },()=>{
+          let { imgData, imgRawData } = this.state
+        // imgData only contains certain data, look at the object in 
+        // console.log(img.Data) to view properties E.g.
+          console.log(imgData.rows,'Rows in image data')
+
+        // imgRawData contains all the infromation. For usage, you
+        // need to use th specific code. E.g. with Int value
+          console.log(imgRawData.uint16('x00280010'),'Rows in Image Raw Data ')
+
+
+      })
     })
   }
 
@@ -73,6 +91,7 @@ class App extends Component {
       <section id = "dicom-web-viewer">
         <div className = "select-file-holder">
           <input type = "file" id = "select-file"  />
+          <div></div>
         </div>
         <div ref = {ref => {this.dicomImg = ref}} id="dicom-img" >
         </div>
