@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "cornerstone-core": "^2.2.8",
+    "cornerstone-wado-image-loader": "^2.2.3",
+    "cornerstone-web-image-loader": "^2.1.1",
+    "dicom-parser": "^1.8.3",
+    "node-sass": "^4.11.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "2.1.8"

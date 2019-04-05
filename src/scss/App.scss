@@ -1,0 +1,26 @@
+*, body, html{
+    padding: 0;
+    margin: 0;
+}
+
+#dicom-web-viewer{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: space-between;
+
+    .select-file-holder{
+        width: 50vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(243, 243, 243);
+    }
+
+    #dicom-img{
+        height: 100vh;
+        width: 50vw;
+        background: rgb(61, 61, 61);
+    }
+}
