@@ -66,6 +66,7 @@ class Viewer extends Component {
     //Loads image
     cornerstone.loadImage(imgId).then((image)=>{
       //Displays image
+
       cornerstone.displayImage(this.dicomImg, image)
       this.setState({
         imgData: image,
@@ -74,9 +75,26 @@ class Viewer extends Component {
           let { imgData, imgRawData } = this.state
         // imgData only contains certain data, look at the object in
         // console.log(img.Data) to view properties E.g.
+        const viewport = cornerstone.getViewport(this.dicomImg)
+        console.log(viewport)
+        console.log(viewport.scale)
+        console.log(this.dicomImg.clientWidth);
+        this.dicomImg.style.width = '500px'
+        this.dicomImg.style.height = '500px'
+        cornerstone.resize(this.dicomImg)
+        let w = this.dicomImg.clientWidth
+        let h= this.dicomImg.clientHeight
+        let columns = imgData.columns
+        let rows = imgData.rows
+        let s =(w/h)/(columns/rows)
 
-          let columns = imgData.columns
-          let rows = imgData.rows
+        console.log(this.dicomImg.style);
+        console.log(s);
+        viewport.scale =s
+        cornerstone.setViewport(this.dicomImg, viewport)
+        console.log(viewport.scale)
+
+
           console.log('rows', rows, 'columns', columns)
         // imgRawData contains all the infromation. For usage, you
         // need to use th specific code. E.g. with Int value
@@ -101,7 +119,9 @@ class Viewer extends Component {
           <input type = "file" id = "select-file"  />
           <div></div>
         </div>
+        <div className='dicomViewport'>
         <div ref = {ref => {this.dicomImg = ref}} id="dicom-img" >
+        </div>
         </div>
       </section>
     );
