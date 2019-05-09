@@ -21,17 +21,17 @@ class Header extends Component{
 <Navbar.Toggle aria-controls="basic-navbar-nav" />
 <Navbar.Collapse id="basic-navbar-nav">
   <Nav className="mr-auto">
-    <Nav.Link href="#home">Patients</Nav.Link>
+    <Nav.Link href="/Patients">Patients</Nav.Link>
 
     <NavDropdown title="Organ" id="basic-nav-dropdown">
-      <NavDropdown.Item href="#action/3.1">Lungs</NavDropdown.Item>
-      <NavDropdown.Item href="#action/3.2">Brain</NavDropdown.Item>
-      <NavDropdown.Item href="#action/3.3">Liver</NavDropdown.Item>
+      <NavDropdown.Item href="/Viewer">Lungs</NavDropdown.Item>
+      <NavDropdown.Item href="/Viewer">Brain</NavDropdown.Item>
+      <NavDropdown.Item href="/Viewer">Liver</NavDropdown.Item>
       </NavDropdown>
       <NavDropdown title="Modality" id="basic-nav-dropdown">
-        <NavDropdown.Item href="#action/3.1">DX</NavDropdown.Item>
-        <NavDropdown.Item href="#action/3.2">CT</NavDropdown.Item>
-        <NavDropdown.Item href="#action/3.3">PETCT</NavDropdown.Item>
+        <NavDropdown.Item href="/Viewer">DX</NavDropdown.Item>
+        <NavDropdown.Item href="/Viewer">CT</NavDropdown.Item>
+        <NavDropdown.Item href="/Viewer">PETCT</NavDropdown.Item>
         </NavDropdown>
       <Nav.Link href="#link">Reports</Nav.Link>
   </Nav>
