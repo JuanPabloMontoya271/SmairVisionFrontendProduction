@@ -1,0 +1,18 @@
+#item-container{
+
+
+
+}
+#card{
+
+  margin-bottom: 25px
+}
+.Drop{
+  background-color: rgb(61, 61, 61);
+  height: 90vh;
+  width: 30vw;
+  margin-top: 20px;
+  margin-left: 10px;
+  padding: 15px;
+  float: left;
+}
