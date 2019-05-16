@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Route, Switch} from 'react-router-dom';
-
+import HttpExample from './Components/Test/tests'
 import App from './App';
 import DicomViewer from './Components/DicomViewerComponent/index';
 import PatientManager from './Components/PatientManager/index';
@@ -11,7 +11,7 @@ const AppRoutes = ()=>
       <Switch>
           <Route path='/Patients' component = {PatientManager}/>
           <Route path='/Viewer' component = {DicomViewer}/>
-
+          <Route path ='/Test' component = {HttpExample}/>
 
           <Route  component = {Page404}/>
 
