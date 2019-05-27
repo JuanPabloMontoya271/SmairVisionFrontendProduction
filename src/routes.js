@@ -10,9 +10,10 @@ const AppRoutes = ()=>
   <App>
       <Switch>
           <Route path='/Patients' component = {PatientManager}/>
-          <Route path='/Viewer' component = {DicomViewer}/>
+          <Route path='/Viewer/:param' component = {DicomViewer}/>
           <Route path ='/Test' component = {HttpExample}/>
-
+          <Route path = '/DefaultView' component = {DicomViewer}/>
+          <Route path = '/' component= {PatientManager}/>
           <Route  component = {Page404}/>
 
 

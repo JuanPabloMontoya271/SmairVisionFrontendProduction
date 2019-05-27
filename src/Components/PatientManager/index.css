@@ -1,6 +1,6 @@
 #item-container{
 
-
+border-radius: 10px;
 
 }
 #card{
@@ -10,9 +10,15 @@
 .Drop{
   background-color: rgb(61, 61, 61);
   height: 90vh;
-  width: 30vw;
+  width: 48vw;
   margin-top: 20px;
   margin-left: 10px;
+  margin-right: 10px;
   padding: 15px;
   float: left;
+  border-radius: 20px;
+}
+.PM{
+
+  border-radius: 100px;
 }

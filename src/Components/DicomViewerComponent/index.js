@@ -5,11 +5,12 @@ import Viewer from '../Viewer'
 import Upload from '../SourceTree/Upload.js'
 class DicomViewer extends Component {
 
-
   render() {
-    return (
+    let {param} = this.props.match.params
+
+   return (
       <div>
-      <Viewer/>
+      <Viewer mname ={param}/>
       </div>
     );
   }

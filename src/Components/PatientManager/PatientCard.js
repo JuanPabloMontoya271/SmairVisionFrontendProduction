@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import Card from 'react-bootstrap/Card';
 import { DragSource } from 'react-dnd'
+import {
+  Link
+} from "react-router-dom";
+
 
 const itemSource ={
 
@@ -37,8 +41,9 @@ class Widget extends Component{
   render(){
     const {isDragging, connectDragSource,item} = this.props;
     const opacity = isDragging ? 0:1;
+    const linked = '/Viewer/'+ item.name
         return connectDragSource(<div><Card id = 'card' style = {{opacity: opacity}}>
-          <Card.Body><span>{this.props.item.name}</span></Card.Body>
+          <Card.Body><span><Link to ={linked}>{this.props.item.name}</Link></span></Card.Body>
         </Card></div>)
 
 

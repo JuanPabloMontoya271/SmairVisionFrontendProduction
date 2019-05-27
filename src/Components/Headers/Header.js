@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
-
+import logoSV from './logoSV.png'
 
 
 
@@ -24,21 +24,18 @@ class Header extends Component{
     <Nav.Link href="/Patients">Patients</Nav.Link>
 
     <NavDropdown title="Organ" id="basic-nav-dropdown">
-      <NavDropdown.Item href="/Viewer">Lungs</NavDropdown.Item>
-      <NavDropdown.Item href="/Viewer">Brain</NavDropdown.Item>
-      <NavDropdown.Item href="/Viewer">Liver</NavDropdown.Item>
+      <NavDropdown.Item href="/DefaultView">Lungs</NavDropdown.Item>
+      <NavDropdown.Item href="/DefaultView">Brain</NavDropdown.Item>
+      <NavDropdown.Item href="/DefaultView">Liver</NavDropdown.Item>
       </NavDropdown>
       <NavDropdown title="Modality" id="basic-nav-dropdown">
-        <NavDropdown.Item href="/Viewer">DX</NavDropdown.Item>
-        <NavDropdown.Item href="/Viewer">CT</NavDropdown.Item>
-        <NavDropdown.Item href="/Viewer">PETCT</NavDropdown.Item>
+        <NavDropdown.Item href="/DefaultView">DX</NavDropdown.Item>
+        <NavDropdown.Item href="/DefaultView">CT</NavDropdown.Item>
+        <NavDropdown.Item href="/DefaultView">PETCT</NavDropdown.Item>
         </NavDropdown>
       <Nav.Link href="#link">Reports</Nav.Link>
   </Nav>
-  <Form inline>
-    <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-    <Button variant="outline-success">Search</Button>
-  </Form>
+  <img src = {logoSV} alt = 'Smair Vision' style = {{width:'100px', height:'80px', 'marginRight': '30px'}}/>
 </Navbar.Collapse>
 </Navbar>
     );

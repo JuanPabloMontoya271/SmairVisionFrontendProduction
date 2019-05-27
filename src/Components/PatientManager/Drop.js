@@ -20,7 +20,9 @@ class Drop extends Component{
     //console.log(connectDropTarget);
     const backgroundColor = hovered?  '#a0a0a0': '#3d3d3d';
     return connectDropTarget(<div id = 'drop' className = 'Drop' style = {{background: backgroundColor}}>
-
+    <div>
+     
+        </div>
       {body}
     </div>)
   };
