@@ -112,6 +112,7 @@ class Viewer extends Component {
     //console.log({name});
     //Reacts dicom-img element reference to load image
     this.dicomImg = null;
+    this.dicomImg2= null;
     this.clickHandler = this.clickHandler.bind(this)
     this.post = this.post.bind(this)
     this.cluster  = this.cluster.bind(this)
@@ -218,25 +219,33 @@ try {
     //Enables HTML5 element to use cornerstone
       let { imgData, imgRawData, pixelData, pixels, segment} = this.state
     cornerstone.enable(this.dicomImg)
+    cornerstone.enable(this.dicomImg2)
     const element =this.dicomImg
+    const element2 = this.dicomImg2
+
     document.getElementById('select-file').addEventListener('change',(e)=>{
       //Extracts only one file from selected files
       const file = e.target.files[0];
+
       //Obtain specific format dicom image id
       //const file2 ='https://s3.us-east-2.amazonaws.com/bucketdeprueba314/IM-0001-0001.dcm'
 
 
       const imgId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
 
-      this.dicomWebViewer(imgId);
+      this.dicomWebViewer(imgId, element, true);
+      this.dicomWebViewer(imgId, element2, false)
       console.log(imgId);
     })
 
     document.getElementById('zoomIn').addEventListener('click', function (e) {
       try {
         const viewport = cornerstone.getViewport(element);
+        const viewport2 = cornerstone.getViewport(element2);
         viewport.scale += 0.25;
+        viewport2.scale += 0.25;
         cornerstone.setViewport(element, viewport);
+        cornerstone.setViewport(element2, viewport2);
 
       } catch (e) {
         console.log(e);
@@ -246,8 +255,11 @@ try {
     document.getElementById('zoomOut').addEventListener('click', function (e) {
       try {
         const viewport = cornerstone.getViewport(element);
+        const viewport2 = cornerstone.getViewport(element2);
+        viewport2.scale -= 0.25;
         viewport.scale -= 0.25;
         cornerstone.setViewport(element, viewport);
+        cornerstone.setViewport(element2, viewport2);
 
       } catch (e) {
         console.log(e);
@@ -258,6 +270,7 @@ try {
 
       try {
         cornerstone.reset(element);
+        cornerstone.reset(element2);
       } catch (e) {
         console.log(e);
       }
@@ -275,16 +288,25 @@ try {
     lastY = e.pageY;
 
     const viewport = cornerstone.getViewport(element);
+    const viewport2 = cornerstone.getViewport(element2);
     if (mouseButton ===1) {
       let viewport = cornerstone.getViewport(element);
+      let viewport2 = cornerstone.getViewport(element2);
            viewport.voi.windowWidth += (deltaX / viewport.scale);
            viewport.voi.windowCenter += (deltaY / viewport.scale);
+           viewport2.voi.windowWidth += (deltaX / viewport2.scale);
+           viewport2.voi.windowCenter += (deltaY / viewport2.scale);
            cornerstone.setViewport(element, viewport);
+           cornerstone.setViewport(element2, viewport2);
     }else if (mouseButton===3|| mouseButton ===2){
 
       viewport.translation.x += (deltaX / viewport.scale);
       viewport.translation.y += (deltaY / viewport.scale);
+
+      viewport2.translation.x += (deltaX / viewport2.scale);
+      viewport2.translation.y += (deltaY / viewport2.scale);
       cornerstone.setViewport(element, viewport);
+      cornerstone.setViewport(element2, viewport2);
 
     }
 
@@ -298,6 +320,49 @@ try {
 
 
 });
+element2.addEventListener('mousedown', function (e) {
+let lastX = e.pageX;
+let lastY = e.pageY;
+const mouseButton =e.which
+function mouseMoveHandler(e) {
+ const deltaX = e.pageX - lastX;
+ const deltaY = e.pageY - lastY;
+ lastX = e.pageX;
+ lastY = e.pageY;
+
+ const viewport = cornerstone.getViewport(element);
+ const viewport2 = cornerstone.getViewport(element2);
+ if (mouseButton ===1) {
+   let viewport = cornerstone.getViewport(element);
+   let viewport2 = cornerstone.getViewport(element2);
+        viewport.voi.windowWidth += (deltaX / viewport.scale);
+        viewport.voi.windowCenter += (deltaY / viewport.scale);
+        viewport2.voi.windowWidth += (deltaX / viewport2.scale);
+        viewport2.voi.windowCenter += (deltaY / viewport2.scale);
+        cornerstone.setViewport(element, viewport);
+        cornerstone.setViewport(element2, viewport2);
+ }else if (mouseButton===3|| mouseButton ===2){
+
+   viewport.translation.x += (deltaX / viewport.scale);
+   viewport.translation.y += (deltaY / viewport.scale);
+
+   viewport2.translation.x += (deltaX / viewport2.scale);
+   viewport2.translation.y += (deltaY / viewport2.scale);
+   cornerstone.setViewport(element, viewport);
+   cornerstone.setViewport(element2, viewport2);
+
+ }
+
+}
+function mouseUpHandler() {
+ document.removeEventListener('mousemove', mouseMoveHandler);
+ document.removeEventListener('mouseup', mouseUpHandler);
+}
+document.addEventListener('mousemove', mouseMoveHandler);
+document.addEventListener('mouseup', mouseUpHandler);
+
+
+});
 
 
 const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
@@ -307,12 +372,40 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         // chrome/safari e.wheelDelta < 0 scroll back, > 0 scroll forward
         try {
           let viewport = cornerstone.getViewport(element);
+          const viewport2 = cornerstone.getViewport(element2);
           if (e.wheelDelta < 0 || e.detail > 0) {
             viewport.scale -= 0.25;
+            viewport2.scale -= 0.25;
+
           } else {
             viewport.scale += 0.25;
+            viewport2.scale += 0.25;
           }
           cornerstone.setViewport(element, viewport);
+          cornerstone.setViewport(element2, viewport2);
+          // Prevent page from scrolling
+          return false;
+        } catch (e) {
+          console.log(e);
+        }
+
+      });
+      element2.addEventListener(eventType, function (e) {
+        // Firefox e.detail > 0 scroll back, < 0 scroll forward
+        // chrome/safari e.wheelDelta < 0 scroll back, > 0 scroll forward
+        try {
+          let viewport = cornerstone.getViewport(element);
+          const viewport2 = cornerstone.getViewport(element2);
+          if (e.wheelDelta < 0 || e.detail > 0) {
+            viewport.scale -= 0.25;
+            viewport2.scale -= 0.25;
+
+          } else {
+            viewport.scale += 0.25;
+            viewport2.scale += 0.25;
+          }
+          cornerstone.setViewport(element, viewport);
+          cornerstone.setViewport(element2, viewport2);
           // Prevent page from scrolling
           return false;
         } catch (e) {
@@ -324,28 +417,41 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
     document.getElementById('hFlip').addEventListener('click', function (e) {
             const viewport = cornerstone.getViewport(element);
+              const viewport2 = cornerstone.getViewport(element2);
             viewport.hflip = !viewport.hflip;
+            viewport2.hflip = !viewport2.hflip;
             cornerstone.setViewport(element, viewport);
+            cornerstone.setViewport(element2, viewport2);
         });
 
         document.getElementById('vFlip').addEventListener('click', function (e) {
        const viewport = cornerstone.getViewport(element);
+         const viewport2 = cornerstone.getViewport(element2);
        viewport.vflip = !viewport.vflip;
+        viewport2.vflip = !viewport2.vflip;
        cornerstone.setViewport(element, viewport);
+        cornerstone.setViewport(element2, viewport2);
    });
 
 
     document.getElementById('lRotate').addEventListener('click', function (e) {
         const viewport = cornerstone.getViewport(element);
+          const viewport2 = cornerstone.getViewport(element2);
         viewport.rotation-=90;
+        viewport2.rotation-=90;
         cornerstone.setViewport(element, viewport);
+        cornerstone.setViewport(element2, viewport2);
     });
 
     document.getElementById('rRotate').addEventListener('click', function (e) {
            const viewport = cornerstone.getViewport(element);
+             const viewport2 = cornerstone.getViewport(element2);
            viewport.rotation+=90;
+           viewport2.rotation+=90;
            cornerstone.setViewport(element, viewport);
+           cornerstone.setViewport(element2, viewport2);
        });
+
 
 
        element.addEventListener('mousemove', function(event) {
@@ -556,16 +662,18 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
 
-  dicomWebViewer = (imgId)=>{
+  dicomWebViewer = (imgId, elements, bol)=>{
     //Loads image
     let {idArray}= this.state
+    if (bol){
+      let nArray =idArray.push({id:imgId, name: '', visible: 'visible'}  )
+    }
 
-    let nArray =idArray.push({id:imgId, name: '', visible: 'visible'}  )
     cornerstone.loadImage(imgId).then((image)=>{
       //Displays image
       console.log(image);
 
-      cornerstone.displayImage(this.dicomImg, image)
+      cornerstone.displayImage(elements, image)
       boleano =true
 
 
@@ -586,17 +694,17 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         // imgData only contains certain data, look at the object in
         // console.log(img.Data) to view properties E.
         console.log(imgData.data.elements);
-        const viewport = cornerstone.getViewport(this.dicomImg)
+        const viewport = cornerstone.getViewport(elements)
         console.log("Viewport",viewport)
-        cornerstone.resize(this.dicomImg)
-        let w = this.dicomImg.clientWidth
-        let h= this.dicomImg.clientHeight
+        cornerstone.resize(elements)
+        let w = elements.clientWidth
+        let h= elements.clientHeight
         let columns = imgData.columns
         let rows = imgData.rows
         let s =(w/h)/(columns/rows)
         let array = Array.from(pixelData)
         viewport.scale =s
-        cornerstone.setViewport(this.dicomImg, viewport)
+        cornerstone.setViewport(elements, viewport)
 
 
         console.log(viewport.scale)
@@ -636,7 +744,9 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         <ListGroup.Item key = {key}>
 
         {item.id}{item.name}
-              <Button key = {key} className= 'botones' style = {{visibility:'visible' }} onClick = {()=>{cornerstone.loadImage(item.id).then((image)=>{
+              <Button key = {key} className= 'botones' style = {{visibility:'visible' }} onClick = {
+
+                ()=>{cornerstone.loadImage(item.id).then((image)=>{
 
 
                 cornerstone.displayImage(this.dicomImg, image)
@@ -700,7 +810,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         <Card className = 'Browser'>
         <Card.Header><div id ='uploader'>Import files {this.props.mname}<img src={icon} alt = 'icon' className='icon'/>
 <input type = "file" id = "select-file" /></div></Card.Header>
-          <Card.Body>
+          <Card.Body className='browser-container'>
           <ListGroup></ListGroup>
           {list}
           </Card.Body>
@@ -708,11 +818,14 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
           <div></div>
         </div>
         <div className='dicomViewport' >
+        <div ref = {ref => {this.dicomImg2 = ref}} id="dicom-img2" className = 'dicom-imgs' onClick = {this.clickHandler} >
 
+        </div>
         <div ref = {ref => {this.dicomImg = ref}} id="dicom-img" onClick = {this.clickHandler} >
 
         </div>
-  
+
+
         <div id = 'pcontainer'>
         {plt}
         {pplt}
