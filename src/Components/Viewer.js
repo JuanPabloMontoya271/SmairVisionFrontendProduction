@@ -22,10 +22,24 @@ import refresh from './icons/refresh.png'
 import zoomout from './icons/zoomout.png'
 import rotate90 from './icons/rotate90.png'
 import rotateback from './icons/rotateback.png'
+import store from '../store'
+import S3FileUpload from 'react-s3'
 let selection = true;
 let boleano = false;
 let mousex;
-let mousey:
+let mousey;
+let test = 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/00aecb01-a116-45a2-956c-08d2fa55433f.dcm'
+const config ={
+  bucketName: 'bucketdeprueba314',
+  dirName: 'Production',
+  /* optional */
+ region: 'us-east-2',
+ accessKeyId: 'AKIA33SE4OYZBDB4RDY5',
+ secretAccessKey: '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',
+
+
+
+}
 cornerstoneWebImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser
@@ -60,8 +74,9 @@ function test_arrays(array){
         axios.post('https://herokudjangoapp314.herokuapp.com/test/', {data:array}).then((res)=>{
 
             response = res
-          console.log(res)})
+
           return response
+})
 }
 function displayCanvasImage(array, colorscale, w, h){
 
@@ -87,11 +102,11 @@ function displayCanvasImage(array, colorscale, w, h){
   ctx.putImageData(data,0,0);
 
 
-  console.log('displayed');
 
 
 }
 class Viewer extends Component {
+
 
   constructor(props){
     super(props);
@@ -105,9 +120,17 @@ class Viewer extends Component {
       negative:'',
       positive :'',
       plt:'',
-      pplt :''
+      pplt :'',
+      organ:'Chest',
+      Modality: 'DX'
 
     }
+    store.subscribe(()=>{
+
+
+      this.setState({organ:store.getState().organ, Modality: store.getState().Modality})
+
+    })
 
     //console.log({name});
     //Reacts dicom-img element reference to load image
@@ -120,6 +143,7 @@ class Viewer extends Component {
 
 
   }
+
 segment(){
       if (!this.state.segment){
 
@@ -135,14 +159,22 @@ segment(){
 
 }
 clickHandler(){
-console.log('clicked');
+
 
 }
 cluster(){
 
-let { imgData, imgRawData, pixelData, pixels} = this.state
+let { imgData, imgRawData, pixelData, pixels, Modality, organ} = this.state
+
+if (organ === 'Chest'){
+
+
+
+switch(Modality){
+case 'DX':
 
 try {
+
   let columns = imgData.columns
   let rows = imgData.rows
   let pArray = Array.from(pixelData)
@@ -154,7 +186,7 @@ try {
      let unique =resultados.data[0].unique;
      let punique = resultados.data[0].punique;
      let pcounts =resultados.data[0].pcounts;
-     console.log(res);
+
      let clustered = resultados.data[0]['cluster labels'];
      const plt = (<Plot className='plot' id = 'plt'
         data={[
@@ -190,27 +222,117 @@ try {
 } catch (e) {
 
 }
+break;
 
+case 'CT':
+  console.log('Chest CT Algorithm');
+    break;
+case 'PETCT':
+  console.log('PETCT Algorithm');
+}
+
+
+}
+else if (organ === 'Brain'){
+
+
+  console.log('Brain: True' );
+  switch(Modality){
+
+    case 'DX':
+      console.log('DX : True');
+      break;
+    case 'CT':
+      console.log('CT : True');
+      break;
+    case 'PETCT':
+      console.log('PETCT : True');
+      break;
+
+  }
+}
+else {
+  console.log(organ);
+}
 }
 post(){
-  let { imgData, imgRawData, pixelData, pixels} = this.state
-try {
-  let columns = imgData.columns
-  let rows = imgData.rows
-  let pArray = Array.from(pixelData)
-  document.getElementById('coords').textContent = document.getElementById('coords').textContent + '  Running Analysis'
-   axios.post('https://herokudjangoapp314.herokuapp.com/model60/', {array:pArray, w: columns,h:rows }).then((res)=>{
-     document.getElementById('coords').textContent = 'Done'
-     let resultados =res.data[0].content['response body'].outputs.score
-    console.log(res.data[0].content['response body'].outputs.score);
-    this.setState({results:resultados, positive: resultados.floatVal[1], negative: resultados.floatVal[0] })
 
-  })
-} catch (e) {
+
+  let { imgData, imgRawData, pixelData, pixels, organ, Modality} = this.state
+
+  if (organ === 'Chest'){
+
+
+
+    switch (Modality){
+
+          case 'DX':
+            try {
+              let columns = imgData.columns
+              let rows = imgData.rows
+              let pArray = Array.from(pixelData)
+              document.getElementById('coords').textContent = document.getElementById('coords').textContent + '  Running Analysis'
+               axios.post('https://herokudjangoapp314.herokuapp.com/model60/', {array:pArray, w: columns,h:rows }).then((res)=>{
+                 document.getElementById('coords').textContent = 'Done'
+                 let resultados =res.data[0].content['response body'].outputs.score
+                console.log(res.data[0].content['response body'].outputs.score);
+                this.setState({results:resultados, positive: resultados.floatVal[1], negative: resultados.floatVal[0] })
+
+              })
+            } catch (e) {
+
+            }
+              break;
+
+              case 'CT':
+                  console.log('DL for CT');
+                  break;
+
+                  case 'PETCT':
+                      console.log('DL for CT');
+                      break;
+
+          }
+
+}
+else if (organ ==='Brain'){
+
+switch (Modality){
+
+  case 'DX':
+  console.log('DL for Brain DX');
+  break;
+  case 'CT':
+      console.log('DL for Brain CT');
+      break;
+
+      case 'PETCT':
+          console.log('DL for Brain CT');
+          break;
+
 
 }
 
+}
+else if (organ ==='Liver'){
 
+switch (Modality){
+
+  case 'DX':
+  console.log('DL for Liver DX');
+  break;
+  case 'CT':
+      console.log('DL for Liver CT');
+      break;
+
+      case 'PETCT':
+          console.log('DL for Liver CT');
+          break;
+
+
+}
+
+}
 
 }
   componentDidMount(){
@@ -226,16 +348,39 @@ try {
     document.getElementById('select-file').addEventListener('change',(e)=>{
       //Extracts only one file from selected files
       const file = e.target.files[0];
+      console.log(file);
+      const name= file.name
+      let timeStamp = (new Date()).getTime();
+      let fileExt = file.name.split('.')[file.name.split('.').length-1];
+      let fileNameWithoutExt = file.name.replace(`.${fileExt}`,'');
+      let newFileName = fileNameWithoutExt + '_' + timeStamp + '.' + fileExt;
+      let newFile = new File([file], newFileName)
+      console.log(newFile);
+      //post the name
 
       //Obtain specific format dicom image id
       //const file2 ='https://s3.us-east-2.amazonaws.com/bucketdeprueba314/IM-0001-0001.dcm'
 
 
       const imgId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-
+      //cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(test);
       this.dicomWebViewer(imgId, element, true);
       this.dicomWebViewer(imgId, element2, false)
-      console.log(imgId);
+      S3FileUpload.uploadFile(newFile, config)
+      .then((data)=>{
+          console.log(data);
+
+      })
+      .catch((err)=>{
+
+
+
+        alert(err)
+      })
+      axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb',{data: {id: newFileName,auth: true, file_name: newFileName, user:'admin'}} ).then((res)=>{
+        console.log(res);
+      })
+
     })
 
     document.getElementById('zoomIn').addEventListener('click', function (e) {
@@ -255,6 +400,7 @@ try {
     document.getElementById('zoomOut').addEventListener('click', function (e) {
       try {
         const viewport = cornerstone.getViewport(element);
+
         const viewport2 = cornerstone.getViewport(element2);
         viewport2.scale -= 0.25;
         viewport.scale -= 0.25;
@@ -454,7 +600,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
 
-       element.addEventListener('mousemove', function(event) {
+       element.addEventListener('mousemove', function (event) {
          if (boleano){
 
            const pixelCoords = cornerstone.pageToPixel(element, event.pageX, event.pageY);
@@ -471,10 +617,10 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
 
-
+      console.log('rendered');
 
       const eventData = e.detail;
-      console.log(eventData);
+
       // set the canvas context to the image coordinate system
       cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
 
@@ -490,7 +636,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
       //console.log(context);
       let pixelsCanvas= ctx.getImageData(0,0,w, h);
       let data = pixelsCanvas.data
-      console.log(image.maxPixelValue);
+
       let sum ;
       let max = image.maxPixelValue;
       let min = image.minPixelValue;
@@ -518,7 +664,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
 
-      console.log(pmax, pmin);
+
       // console.log(pixelsCanvas);
       // console.log(w,h);
       // console.log(w*h*4);
@@ -646,7 +792,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
         }
-        console.log(sum);
+
         ctx.putImageData(pixelsCanvas, 0, 0);
 
 
@@ -668,10 +814,10 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
     if (bol){
       let nArray =idArray.push({id:imgId, name: '', visible: 'visible'}  )
     }
-
+    const url = 'wadouri:'+test
     cornerstone.loadImage(imgId).then((image)=>{
       //Displays image
-      console.log(image);
+
 
       cornerstone.displayImage(elements, image)
       boleano =true
@@ -693,9 +839,9 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
           let { imgData, imgRawData, pixelData, pixels} = this.state
         // imgData only contains certain data, look at the object in
         // console.log(img.Data) to view properties E.
-        console.log(imgData.data.elements);
+
         const viewport = cornerstone.getViewport(elements)
-        console.log("Viewport",viewport)
+
         cornerstone.resize(elements)
         let w = elements.clientWidth
         let h= elements.clientHeight
@@ -707,7 +853,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         cornerstone.setViewport(elements, viewport)
 
 
-        console.log(viewport.scale)
+
         this.setState({plt: '', pplt: ''})
 
 
@@ -728,6 +874,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
     })
+        store.dispatch({type: 'idArray',idArray: this.state.idArray})
 
   }
 
@@ -764,9 +911,9 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                     let { imgData, imgRawData, pixelData, pixels} = this.state
                   // imgData only contains certain data, look at the object in
                   // console.log(img.Data) to view properties E.
-                  console.log(imgData.data.elements);
+
                   const viewport = cornerstone.getViewport(this.dicomImg)
-                  console.log("Viewport",viewport)
+
                   cornerstone.resize(this.dicomImg)
                   let w = this.dicomImg.clientWidth
                   let h= this.dicomImg.clientHeight
@@ -778,7 +925,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                   cornerstone.setViewport(this.dicomImg, viewport)
                   cornerstone.reset(this.dicomImg)
 
-                  console.log(viewport.scale)
+
 
 
 
@@ -808,7 +955,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
       <section id = "dicom-web-viewer">
         <div className = "select-file-holder">
         <Card className = 'Browser'>
-        <Card.Header><div id ='uploader'>Import files {this.props.mname}<img src={icon} alt = 'icon' className='icon'/>
+        <Card.Header><div id ='uploader'>Import <b>{this.state.organ} {this.state.Modality}</b> files for Patient: <b>{this.props.mname}</b><img src={icon} alt = 'icon' className='icon'/>
 <input type = "file" id = "select-file" /></div></Card.Header>
           <Card.Body className='browser-container'>
           <ListGroup></ListGroup>
@@ -845,7 +992,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         <Button className="Tools" id = 'rRotate'><img src = {rotateback} alt ='rotate back'/></Button>
 
         <Button className="Tools" id = 'Analyze' onClick ={this.cluster} style = {{opacity:1}}>Run Clustering</Button>
-        <Button className="Tools" id = 'Segment' onClick ={this.segment} style = {{opacity:1}}>Run Clustering</Button>
+
         <Button className="Tools" id = 'Analyze' onClick ={this.post} style = {{opacity:1}}>Run Analysis</Button>
 
         <Card.Header className ='stats'>Stats</Card.Header>
