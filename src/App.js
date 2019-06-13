@@ -7,8 +7,6 @@ import Content from './Components/Content/Content.js'
 import PropTypes from 'prop-types'
 
 
-
-
 class App extends Component {
 
   static propTypes = {

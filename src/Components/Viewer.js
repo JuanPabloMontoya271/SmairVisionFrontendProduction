@@ -364,6 +364,7 @@ switch (Modality){
 
       const imgId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
       //cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(test);
+      this.setState({file_name: newFileName})
       this.dicomWebViewer(imgId, element, true);
       this.dicomWebViewer(imgId, element2, false)
       S3FileUpload.uploadFile(newFile, config)
