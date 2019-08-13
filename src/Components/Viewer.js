@@ -339,6 +339,13 @@ switch (Modality){
 
 
     //Enables HTML5 element to use cornerstone
+    axios.get('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb').then((res)=>{
+      console.log(res.data.respuesta.Items);
+      let resArray = res.data.respuesta.Items
+      this.setState({idArray:resArray })
+
+
+    })
       let { imgData, imgRawData, pixelData, pixels, segment} = this.state
     cornerstone.enable(this.dicomImg)
     cornerstone.enable(this.dicomImg2)
@@ -365,8 +372,8 @@ switch (Modality){
       const imgId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
       //cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(test);
       this.setState({file_name: newFileName})
-      this.dicomWebViewer(imgId, element, true);
-      this.dicomWebViewer(imgId, element2, false)
+       this.dicomWebViewer(imgId, element, true);
+       this.dicomWebViewer(imgId, element2, false)
       S3FileUpload.uploadFile(newFile, config)
       .then((data)=>{
           console.log(data);
@@ -380,6 +387,14 @@ switch (Modality){
       })
       axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb',{data: {id: newFileName,auth: true, file_name: newFileName, user:'admin'}} ).then((res)=>{
         console.log(res);
+
+        axios.get('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb').then((res)=>{
+          console.log(res.data.respuesta.Items);
+          let resArray = res.data.respuesta.Items
+          this.setState({idArray:resArray })
+
+
+        })
       })
 
     })
@@ -815,7 +830,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
     if (bol){
       let nArray =idArray.push({id:imgId, name: '', visible: 'visible'}  )
     }
-    const url = 'wadouri:'+test
+    const url2 = 'wadouri:'+test
     cornerstone.loadImage(imgId).then((image)=>{
       //Displays image
 
@@ -890,14 +905,23 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
       return (
         <ListGroup.Item key = {key}>
-
+        <div className = ' TextClass'>
+        <b>
+        {key}</b>{'  \n'}
         {item.id}{item.name}
+        </div>
+        <div className = 'openClass'>
               <Button key = {key} className= 'botones' style = {{visibility:'visible' }} onClick = {
 
-                ()=>{cornerstone.loadImage(item.id).then((image)=>{
+                ()=>{
+                  console.log(item.id);
+                  let link = 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/'
+                  let wadouri = 'wadouri:'+ link+item.id
+                  cornerstone.loadAndCacheImage(wadouri).then((image)=>{
 
 
                 cornerstone.displayImage(this.dicomImg, image)
+                cornerstone.displayImage(this.dicomImg2, image)
 
                 this.setState({
                   imgData: image,
@@ -914,18 +938,27 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                   // console.log(img.Data) to view properties E.
 
                   const viewport = cornerstone.getViewport(this.dicomImg)
-
+                  const viewport2 =  cornerstone.getViewport(this.dicomImg2)
                   cornerstone.resize(this.dicomImg)
+                    cornerstone.resize(this.dicomImg2)
+
                   let w = this.dicomImg.clientWidth
                   let h= this.dicomImg.clientHeight
+                  let w2 = this.dicomImg2.clientWidth
+                  let h2= this.dicomImg2.clientHeight
+
                   let columns = imgData.columns
                   let rows = imgData.rows
                   let s =(w/h)/(columns/rows)
+                  let s2 =(w2/h2)/(columns/rows)
                   let array = Array.from(pixelData)
                   viewport.scale =s
-                  cornerstone.setViewport(this.dicomImg, viewport)
-                  cornerstone.reset(this.dicomImg)
+                  viewport2.scale =s
 
+                  cornerstone.setViewport(this.dicomImg, viewport)
+                  cornerstone.setViewport(this.dicomImg2, viewport2)
+                  cornerstone.reset(this.dicomImg2)
+                  cornerstone.reset(this.dicomImg)
 
 
 
@@ -947,6 +980,8 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
               })}} >open</Button>
+
+                </div>
         </ListGroup.Item>
       )
     })
@@ -954,7 +989,10 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
     return (
       <div>
       <section id = "dicom-web-viewer">
-        <div className = "select-file-holder">
+        <div
+
+
+         className = "select-file-holder">
         <Card className = 'Browser'>
         <Card.Header><div id ='uploader'>Import <b>{this.state.organ} {this.state.Modality}</b> files for Patient: <b>{this.props.mname}</b><img src={icon} alt = 'icon' className='icon'/>
 <input type = "file" id = "select-file" /></div></Card.Header>
