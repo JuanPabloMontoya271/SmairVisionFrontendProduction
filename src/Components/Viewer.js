@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as nj from 'numjs'
+import swal from 'sweetalert';
 import '../scss/App.scss';
 import * as cornerstone from 'cornerstone-core';
 import * as cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
@@ -24,6 +25,7 @@ import rotate90 from './icons/rotate90.png'
 import rotateback from './icons/rotateback.png'
 import store from '../store'
 import S3FileUpload from 'react-s3'
+import { NONAME } from 'dns';
 let selection = true;
 let boleano = false;
 let mousex;
@@ -980,6 +982,48 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
               })}} >open</Button>
+              <Button style = {{'margin': '5px'}} onClick = {()=>{
+
+swal({
+  title: "Are you sure?",
+  text: "Once deleted, you will not be able to recover your file",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+
+    console.log('deleted')
+    axios.put('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb', {'data':{'id':item.id}}).then((res)=>{
+
+      
+   console.log('deleted', item.id);
+   axios.get('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb').then((res)=>{
+        console.log(res.data.respuesta.Items);
+              let resArray = res.data.respuesta.Items
+              this.setState({idArray:resArray })
+
+
+})
+    })
+    swal("Succesfully deleted from your database", {
+      title: 'Done',
+      icon: "success",
+    });
+
+
+  } else {
+    swal("Canceled");
+  }
+});
+
+
+
+                      
+
+
+              }}>delete</Button>
 
                 </div>
         </ListGroup.Item>
@@ -992,7 +1036,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
         <div
 
 
-         className = "select-file-holder">
+         className = "select-file-holder" style = {{'visible': 'visible' }}>
         <Card className = 'Browser'>
         <Card.Header><div id ='uploader'>Import <b>{this.state.organ} {this.state.Modality}</b> files for Patient: <b>{this.props.mname}</b><img src={icon} alt = 'icon' className='icon'/>
 <input type = "file" id = "select-file" /></div></Card.Header>
