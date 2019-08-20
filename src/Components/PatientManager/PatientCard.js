@@ -7,31 +7,6 @@ import {
 } from "react-router-dom";
 
 
-const itemSource ={
-
-    beginDrag(props){
-      return props.item
-    },
-    endDrag(props, monitor, component){
-      if(!monitor.didDrop()){
-
-        return ;
-      }
-      console.log(props,monitor, component)
-      console.log(props.item.id)
-      return props.handleDrop(props.item.id);
-    }
-
-
-}
-function collect(connect, monitor){
-
-  return {
-    connectDragSource:connect.dragSource(),
-    connectDragPreview: connect.dragPreview(),
-    isDragging: monitor.isDragging(),
-  }
-}
 
 class Widget extends Component{
 
@@ -39,10 +14,10 @@ class Widget extends Component{
 
 
   render(){
-    const {isDragging, connectDragSource,item} = this.props;
-    const opacity = isDragging ? 0:1;
+    const {item} = this.props;
+   
     const linked = '/Viewer/'+ item.name
-        return connectDragSource(<div><Card id = 'card' style = {{opacity: opacity}}>
+        return (<div><Card id = 'card' >
           <Card.Body><span><Link to ={linked}>{this.props.item.name}</Link></span></Card.Body>
         </Card></div>)
 
@@ -50,4 +25,4 @@ class Widget extends Component{
 
   }
 }
-export default DragSource('card', itemSource, collect)(Widget);
+export default Widget;

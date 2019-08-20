@@ -118,15 +118,12 @@ class PatientManager extends Component {
                        </Modal>
 
                </div>
-            <Drop id = 'item-container' body ={this.state.items.map ((item,key)=>(<Widget key = {item.id} item = {item} handleDrop = {(id)=> this.deleteItem(id)}/>))} />
-
+           
 
         </div>
         <div>
           <div></div>
-            <Drop id = 'inProgress' body ={this.state.in_Progress.map ((item,key)=>(<Widget key = {item.id} item = {item}  handleDrop = {(id)=> this.deleteItem2(id)}/>))} />
-
-
+            
         </div>
 
         </div>
@@ -134,4 +131,4 @@ class PatientManager extends Component {
     )
   }
 };
-export default DragDropContext(HTML5Backend)(PatientManager)
+export default PatientManager;

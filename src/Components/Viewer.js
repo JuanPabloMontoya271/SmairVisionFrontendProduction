@@ -349,6 +349,7 @@ switch (Modality){
 
     })
       let { imgData, imgRawData, pixelData, pixels, segment} = this.state
+    
     cornerstone.enable(this.dicomImg)
     cornerstone.enable(this.dicomImg2)
     const element =this.dicomImg
@@ -921,9 +922,21 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                   let wadouri = 'wadouri:'+ link+item.id
                   cornerstone.loadAndCacheImage(wadouri).then((image)=>{
 
+                try {
+                  cornerstone.displayImage(this.dicomImg, image)
+                  cornerstone.displayImage(this.dicomImg2, image)
+                  console.log('displayed');
+                
+                  
+                } catch (error) {
+                  console.log(error);
+                  swal({
 
-                cornerstone.displayImage(this.dicomImg, image)
-                cornerstone.displayImage(this.dicomImg2, image)
+                    title: 'Error',
+                    icon: 'error'
+                  })
+                }
+             
 
                 this.setState({
                   imgData: image,
@@ -961,6 +974,11 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                   cornerstone.setViewport(this.dicomImg2, viewport2)
                   cornerstone.reset(this.dicomImg2)
                   cornerstone.reset(this.dicomImg)
+                  swal("Loaded",{
+
+                    title: "Done",
+                    icon: 'success'
+                  })
 
 
 
