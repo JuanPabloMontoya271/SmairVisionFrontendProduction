@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
-import Widget from './PatientCard'
-import Drop from './Drop'
 import './index.css'
-import Card from 'react-bootstrap/Card'
+import swal from 'sweetalert';
 import Button from 'react-bootstrap/Button'
+import Table from 'react-bootstrap/Table'
 import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
+import axios from 'axios'
 import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
-import HTML5Backend from 'react-dnd-html5-backend'
-import { DragDropContext } from 'react-dnd'
+import Loading from 'react-loading-components';
+
+
+import {
+  Link, Redirect
+} from "react-router-dom";
+
 class PatientManager extends Component {
 
   constructor(props, context) {
@@ -20,6 +24,8 @@ class PatientManager extends Component {
     this.handleSave = this.handleSave.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.state={
+      loading: 'hidden',
+      owner : 'admin',
       counter :1,
       items: [
 
@@ -27,9 +33,27 @@ class PatientManager extends Component {
       in_Progress:[],
       concluded:[],
       show: false,
-      name: ''
+      name: '',
+      last_name: ''
 
     }
+
+  }
+  componentDidMount(){
+    
+    
+    // WARNING SECURITY RISK HERE
+    this.setState({loading: 'visible'})
+    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data:{key: 'owner', eq: 'admin', table: 'Pacientes'}})
+    .then((res)=>{
+
+
+      console.log(res);
+      this.setState({items: res.data.response['Items'], loading: 'hidden'})
+      
+    });
+
+    
 
   }
   handleUpdate = (evt)=>{
@@ -41,6 +65,15 @@ class PatientManager extends Component {
             })
 
   }
+  handleUpdateLn = (evt)=>{
+
+    this.setState({
+
+
+     last_name: evt.target.value
+    })
+
+}
   handleClose = ()=> {
 
     this.setState({ show: false})
@@ -48,61 +81,109 @@ class PatientManager extends Component {
   }
 
   handleShow = ()=> {
-    this.setState({ show: true });
+    this.setState({ show: true, name:"", last_name: ""  });
+    
   }
   handleSave = ()=>{
-    let {items, counter, name} =this.state
-
+    let {items, counter, name, last_name, owner} =this.state
+    let timeStamp = (new Date()).getTime();
+    let unique_id = name+'_'+(Math.random()*1000)+'_'+timeStamp
+    let ids= unique_id.toString()
+    let temp_item= {id: ids, patient: ids,name: name, last_name: last_name, owner :owner}
+    
+    //WARNING CONFIG FILE REQUIREMENT FOR SECURITY
+    
     counter = counter +1;
-    items.push({id: counter, name: name, cs:0})
+    
+
+    //WARNING MORE CONFIG MATERIAL THAT YOU NEED TO SOLVE REALLY SOLVE
+ 
+
+    this.setState({loading: 'visible'})
+    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamopostpatient', {data: temp_item,id : ids, table: 'Pacientes'})
+    .then((res)=>{
+
+      console.log(res);
+      items.push(temp_item)
+      this.setState({loading: 'hidden'})
+    })
     this.setState({ show: false, items, counter })
   }
-  deleteItem = (id)=>{
-    this.setState(prevState=>{
-      let items = prevState.items;
-
-      const index=items.findIndex(item =>item.id===id);
-
-
-      let progression =items.splice(index,1);
-      const p = prevState.in_Progress;
-      const c = prevState.concluded;
-
-      p.push(progression[0]);
-      console.log(p);
-      return {items, p}
-    })
-    console.log('deleting id:' + id)
-  }
-
-  deleteItem2 = (id)=>{
-    this.setState(prevState=>{
-      let items = prevState.items;
-      const p = prevState.in_Progress;
-
-      const index=p.findIndex(item =>item.id===id);
-
-
-
-      let progression =p.splice(index,1);
-
-      items.push(progression[0]);
-
-      return {items, p}
-    })
-    console.log('deleting id:' + id)
-  }
+  
+  
   render(){
+      
+      let {items, loading}  =this.state
+      let list_items = items.map((item)=>
+     
+
+        <tr key = {item.id} >
+        
+        <td ><Link to = {'/Viewer/'+ item.id} >{item.id}</Link></td>
+        <td><Link to = {'/Viewer/'+ item.id} >{item.name}</Link></td>
+        <td><Link to = {'/Viewer/'+ item.id} >{item.last_name}</Link></td>
+        <td><Link to = {'/Viewer/'+ item.id} >{item.owner}</Link><Button style = {{'float': 'right'}} onClick = {()=>{
+
+
+            console.log('deleted');
+            swal({
+              title: "Are you sure?",
+              text: "Once deleted, you will not be able to recover your file",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+            
+                console.log('deleted')
+                //WARNING INFO SECRETA SIN PROTEJER
+            axios.put('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldelete',{id:item.id, table: 'Pacientes'}).then((res)=>{
+
+
+              console.log(res);
+              this.setState({loading: 'visible'})
+                  axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data:{key: 'owner', eq: 'admin', table: 'Pacientes'}})
+                    .then((res)=>{
+
+
+                         console.log(res);
+                          this.setState({items: res.data.response['Items'], loading: 'hidden'})
+      
+            });
+
+            })
+                swal("Succesfully deleted from your database", {
+                  title: 'Done',
+                  icon: "success",
+                });
+            
+            
+              } else {
+                swal("Canceled");
+              }
+            });
+            
+            
+        }}>delete</Button></td>
+        </tr>
+        
+      )
+      
+      
     return(
       <div >
         <div >
             <div className = 'Tools'><Button variant="primary" onClick={this.handleShow}>
                  Add
-               </Button>
+               </Button> <div style = {{'visibility': loading, 'position': 'absolute', 'left': '42.5%', 'top': '50%'}}>
+               
+               <Loading type='bars' width={150} height={150} fill='#216AC2' /></div>
 
                <Modal show={this.state.show} onHide={this.handleClose}>
                          <Modal.Header closeButton>
-                           <Modal.Title><InputGroup className="mb-3"> <FormControl  placeholder = "Patient Name" id = 'formid' value = {this.state.name} onChange = {this.handleUpdate}/>
+                           <Modal.Title><InputGroup className="mb-3"> <FormControl  placeholder = "First Name" id = 'formid' value = {this.state.name} onChange = {this.handleUpdate}/>
+                           <FormControl  placeholder = "Last Name" id = 'formid' value = {this.state.last_name} onChange = {this.handleUpdateLn}/>
 </InputGroup></Modal.Title>
 
                          </Modal.Header>
@@ -122,7 +203,23 @@ class PatientManager extends Component {
 
         </div>
         <div>
-          <div></div>
+          <div>
+
+
+          <Table striped bordered hover>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Global ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {list_items}
+  </tbody>
+</Table>
+          </div>
             
         </div>
 
