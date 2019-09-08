@@ -133,7 +133,7 @@ class Viewer extends Component {
 
 
       this.setState({organ:store.getState().organ, Modality: store.getState().Modality})
-
+      
     })
 
     //console.log({name});

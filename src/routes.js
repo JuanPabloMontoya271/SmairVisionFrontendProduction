@@ -8,18 +8,20 @@ import Page404 from './Components/Page404/index';
 import MyEditor from './Components/Reports/editor'
 import HomeMenu from './Components/MenuPrincipal/menu'
 import UploadTest from './Components/UploadTest.js'
+import Login from './Components/Login/index.js'
+import Profile from './Components/Profile/index.js'
 const AppRoutes = ()=>
   <App>
       <Switch>
-          <Route path='/Patients' component = {PatientManager}/>
+          <Route path='/Patients/:param' component = {PatientManager}/>
           <Route path='/Viewer/:param' component = {DicomViewer}/>
-
+          <Route path  = '/Profile' component = {Profile}/>
           <Route path = '/DefaultView' component = {DicomViewer}/>
           <Route path = '/Reportes' component= {MyEditor}/>
           <Route path ='/Test' component = {UploadTest}/>
           <Route path ='/HomeMenu' component = {HomeMenu}/>
 
-          <Route path = '/' component= {PatientManager}/>
+          <Route path = '/' component= {Login}/>
 
           <Route  component = {Page404}/>
 

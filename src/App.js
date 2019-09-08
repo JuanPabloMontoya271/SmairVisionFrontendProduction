@@ -8,15 +8,47 @@ import PropTypes from 'prop-types'
 
 
 class App extends Component {
+  
+  constructor (props){
+    super(props)
+    this.state = {
 
+      visible: 'visible'
+    }
+  }
+  componentDidMount(){
+    const currentloc = window.location.pathname
+    let visibility = 'visible'
+    switch (currentloc) {
+      case '/':
+          visibility='hidden'
+        break;
+    
+      default:
+        visibility = 'visible'
+        break;
+    }
+    this.setState({visible: visibility})
+
+  }
   static propTypes = {
     children: PropTypes.object.isRequired
   };
   render() {
+    
+    
+    
     const {children}= this.props;
+    let {visible}  = this.state
+    console.log(children);
+  
     return (
       <div>
-      <Header/>
+      <div style = {{'visibility': visible}}>
+
+      <Header />
+      </div>
+      
       <Content body = {children}/>
 
 

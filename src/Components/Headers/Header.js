@@ -55,11 +55,11 @@ class Header extends Component{
 
     return (
       <Navbar bg="light" expand="lg">
-<Navbar.Brand href="/HomeMenu">Smair Vision</Navbar.Brand>
+<Navbar.Brand href="/Profile">Smair Vision</Navbar.Brand>
 <Navbar.Toggle aria-controls="basic-navbar-nav" />
 <Navbar.Collapse id="basic-navbar-nav">
   <Nav className="mr-auto">
-    <Nav.Link href="/Patients">Patients</Nav.Link>
+    <Nav.Link href="/">Patients</Nav.Link>
 
     <NavDropdown title={this.state.titleOrgan } id="basic-nav-dropdown">
       <NavDropdown.Item onClick = { this.LungsClicked}>Chest</NavDropdown.Item>

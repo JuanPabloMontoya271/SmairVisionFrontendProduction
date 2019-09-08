@@ -8,7 +8,7 @@ import axios from 'axios'
 import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Loading from 'react-loading-components';
-
+import store from '../../store'
 
 import {
   Link, Redirect
@@ -18,33 +18,43 @@ class PatientManager extends Component {
 
   constructor(props, context) {
     super(props, context);
-
+    
+    
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.state={
       loading: 'hidden',
-      owner : 'admin',
+      owner :this.props.match.params.param,
       counter :1,
       items: [
 
       ],
+      
       in_Progress:[],
       concluded:[],
       show: false,
       name: '',
-      last_name: ''
+      last_name: '',
+     
 
     }
+    store.subscribe(()=>{
+
+
+      this.setState({ user: store.getState().auth_user})
+      alert(this.state.user)
+    })
 
   }
   componentDidMount(){
     
     
+    
     // WARNING SECURITY RISK HERE
     this.setState({loading: 'visible'})
-    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data:{key: 'owner', eq: 'admin', table: 'Pacientes'}})
+    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data:{key: 'owner', eq: this.state.owner, table: 'Pacientes'}})
     .then((res)=>{
 
 
@@ -56,6 +66,7 @@ class PatientManager extends Component {
     
 
   }
+ 
   handleUpdate = (evt)=>{
 
             this.setState({
@@ -112,10 +123,11 @@ class PatientManager extends Component {
   
   
   render(){
-      
+
+  
       let {items, loading}  =this.state
       let list_items = items.map((item)=>
-     
+      
 
         <tr key = {item.id} >
         
@@ -143,7 +155,7 @@ class PatientManager extends Component {
 
               console.log(res);
               this.setState({loading: 'visible'})
-                  axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data:{key: 'owner', eq: 'admin', table: 'Pacientes'}})
+                  axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data:{key: 'owner', eq: this.state.owner, table: 'Pacientes'}})
                     .then((res)=>{
 
 
@@ -170,7 +182,7 @@ class PatientManager extends Component {
         
       )
       
-      
+    if(true){
     return(
       <div >
         <div >
@@ -225,7 +237,13 @@ class PatientManager extends Component {
 
         </div>
 
-    )
+    );
+
+    }
+    else{
+
+      return(<div><h1>Auth error</h1></div>)
+    }
   }
 };
 export default PatientManager;

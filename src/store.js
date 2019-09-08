@@ -25,6 +25,14 @@ const reducer  = (state, action) =>{
       idArray: action.idArray
     }
   }
+  else if (action.type === 'auth_user'){
+
+    return {
+
+      ...state,
+      auth_user: action.auth_user
+    }
+  }
 
   return state
 }
@@ -32,4 +40,4 @@ const reducer  = (state, action) =>{
 
 
 
-export default createStore(reducer, {organ: '', Modality: '', idArray: ''});
+export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : ''});
