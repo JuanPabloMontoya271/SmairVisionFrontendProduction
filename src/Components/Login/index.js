@@ -44,7 +44,7 @@ this.setState({
 }
 validate =  () =>{
     
-    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/auth', {data:{key: 'auth', eq: this.state.user, table : 'Users', password: this.state.pass}}).then((res)=>{
+    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/auth', {data:{key: 'user', eq: this.state.user, table : 'Users', password: this.state.pass}}).then((res)=>{
 
 
     console.log(res.data.response, res.data.auth);

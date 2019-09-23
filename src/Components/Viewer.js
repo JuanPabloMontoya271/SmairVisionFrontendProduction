@@ -1,22 +1,34 @@
 import React, { Component } from 'react';
 import * as nj from 'numjs'
 import swal from 'sweetalert';
+import QRcode from 'qrcode.react'
 import '../scss/App.scss';
 import * as cornerstone from 'cornerstone-core';
 import * as cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
 import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import Hammer from "hammerjs";
 import * as dicomParser from 'dicom-parser';
 import * as cornerstoneTools from 'cornerstone-tools'
+import * as cornerstoneMath from 'cornerstone-math';
 import colormap from 'colormap'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card'
+import Modal from 'react-bootstrap/Modal'
+import Badge from 'react-bootstrap/Badge'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Form from 'react-bootstrap/Form'
+import InputGroup from 'react-bootstrap/InputGroup'
+import FormControl from 'react-bootstrap/FormControl'
+import { Slider } from 'react-compound-slider'
 import set from './icons/set.png'
+import Share from './icons/share2.png'
 import axios from 'axios'
 import Display from './Plot'
 import Plot from 'react-plotly.js';
 import flip from './icons/flip.png'
+import Delete from './icons/delete5.png';
+import Return from './icons/return.png'
+import abrirMenu from './icons/abrirmenu.png'
 import icon from './icons/icon2.png'
 import zoom from './icons/zoom.png'
 import refresh from './icons/refresh.png'
@@ -27,10 +39,13 @@ import store from '../store'
 import S3FileUpload from 'react-s3'
 import { NONAME } from 'dns';
 import Loading from 'react-loading-components';
+import { red, redBright } from 'ansi-colors';
+import { log } from 'util';
 let selection = true;
 let boleano = false;
 let mousex;
 let mousey;
+let rois =[];
 let test = 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/00aecb01-a116-45a2-956c-08d2fa55433f.dcm'
 const config ={
   bucketName: 'bucketdeprueba314',
@@ -45,15 +60,20 @@ const config ={
 }
 cornerstoneWebImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
+cornerstoneTools.external.Hammer = Hammer;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser
 cornerstoneWADOImageLoader.configure({
   useWebWorkers: true,
 });
 
+console.log('init tools');
 //Add cornerstoneWADOImageLoaderCodecs.min and cornerstoneWADOImageLoaderWebWorker.min from
 //cornerstone-wado-image-loader to ImageLoaderScripts in public folder
 try {
   //Configures loaders for web to avoud error: unexpected token <-
+ 
+  
   cornerstoneWADOImageLoader.webWorkerManager.initialize({
       maxWebWorkers: 8,
       startWebWorkersOnDemand: true,
@@ -114,7 +134,9 @@ class Viewer extends Component {
   constructor(props){
     super(props);
     this.state = {
+      tool: 10,
       imgData: '',
+      visible: 'hidden',
       imgRawData: '',
       styles: {display:'none'},
       bol: true,
@@ -126,7 +148,11 @@ class Viewer extends Component {
       pplt :'',
       organ:'Chest',
       Modality: 'DX',
-      loading: 'hidden'
+      loading: 'hidden',
+      show : false, 
+      link: 'http://www.smairvision.com.s3-website-us-west-2.amazonaws.com/',
+      rectROIs : [],
+      d_user : ''
 
     }
     store.subscribe(()=>{
@@ -140,14 +166,61 @@ class Viewer extends Component {
     //Reacts dicom-img element reference to load image
     this.dicomImg = null;
     this.dicomImg2= null;
+    this.Tumbnail = null;
+    this.handleSave = this.handleSave.bind(this)
     this.clickHandler = this.clickHandler.bind(this)
+    this.handleUpdateUser = this.handleUpdateUser.bind(this)
     this.post = this.post.bind(this)
+    this.Share = this.Share.bind(this)
     this.cluster  = this.cluster.bind(this)
     this.segment = this.segment.bind(this)
+    this.getMenu = this.getMenu.bind(this)
+    this.handleHide =this.handleHide.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+
+  }
+  handleUpdateUser(e){
+    this.setState({d_user : e.target.value})
+    
+    
+  }
+  handleClose(){
+
+    this.setState({show:false, d_user : ''})
+  }
+  handleSave(){
+
+    //Aquí se da el acceso a la imagen en el server... Suerte !!!
+    this.setState({show:false, d_user: ''})
+
+  }
+  handleHide(){
+
+      this.setState({show:false, d_user: ''})
+
+  }
+getMenu(){
+  if(this.state.visible === 'visible'){
+    this.setState({visible:'hidden'})
 
 
   }
+  else{
 
+    this.setState({visible:'visible'})
+  }
+ 
+  console.log('menu');
+  
+}
+Share(){
+
+  this.setState({show: true})
+
+
+
+
+}
 segment(){
       if (!this.state.segment){
 
@@ -342,6 +415,11 @@ switch (Modality){
 }
 
 }
+componentWillMount(){
+
+
+
+}
   componentDidMount(){
 
 
@@ -358,6 +436,7 @@ switch (Modality){
     
     cornerstone.enable(this.dicomImg)
     cornerstone.enable(this.dicomImg2)
+    
     const element =this.dicomImg
     const element2 = this.dicomImg2
 
@@ -377,7 +456,7 @@ switch (Modality){
       //Obtain specific format dicom image id
       //const file2 ='https://s3.us-east-2.amazonaws.com/bucketdeprueba314/IM-0001-0001.dcm'
 
-
+     
       const imgId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
       //cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(test);
       this.setState({file_name: newFileName, loading: 'visible'})
@@ -638,18 +717,21 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
     });
 
 
+    let {tool, rectROIs} = this.state
+    
+     function onImageRendered(e) {
 
-    function onImageRendered(e) {
 
-
-
-      console.log('rendered');
+  
+      
+   
 
       const eventData = e.detail;
-
+      let coords;
+     
       // set the canvas context to the image coordinate system
       cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
-
+      
       // NOTE: The coordinate system of the canvas is in image pixel space.  Drawing
       // to location 0,0 will be the top left of the image and rows,columns is the bottom
       // right.
@@ -685,8 +767,42 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
       let pmin8 = 20 * pratio;
       let pmax9=  19* pratio;
       let pmin9 =  0* pratio;
-
-
+            
+      element.addEventListener('mousemove', (e)=>{
+        coords = cornerstone.pageToPixel(element, e.pageX, e.pageY)
+         
+         
+       })
+       element.addEventListener('mousedown', (e)=>{
+         try {
+          switch (tool) {
+            case 0:
+            
+              
+              break;
+          
+            default:
+              console.log('ohne Werkzeug');
+              ctx.beginPath();
+              ctx.rect(coords.x, coords.y, 100,100)
+              ctx.lineWidth = "6";
+              ctx.strokeStyle = "red"
+              ctx.stroke();
+              rois.push({x: coords.x, y: coords.y, w: 100,h: 100})
+              
+             
+              
+              break;
+          }
+         } catch (error) {
+           console.log(error);
+           
+         }
+         
+         console.log('mousedown', coords);
+         
+ 
+       })
 
 
 
@@ -844,7 +960,8 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
     cornerstone.loadImage(imgId).then((image)=>{
       //Displays image
 
-
+      
+      
       cornerstone.displayImage(elements, image)
       boleano =true
 
@@ -912,14 +1029,15 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
     let list = idArray.map((item, key) =>{
-
+      
       return (
-        <ListGroup.Item key = {key}>
+        <ListGroup.Item className = 'ItemClass'key = {key}>
         <div className = ' TextClass'>
         <b>
         {key}</b>{'  \n'}
         {item.id}{item.name}
         </div>
+        
         <div className = 'openClass'>
               <Button key = {key} className= 'botones' style = {{visibility:'visible' }} onClick = {
 
@@ -932,6 +1050,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                 try {
                   cornerstone.displayImage(this.dicomImg, image)
                   cornerstone.displayImage(this.dicomImg2, image)
+            
                   console.log('displayed');
                 
                   
@@ -986,7 +1105,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                     title: "Done",
                     icon: 'success'
                   })
-
+                 
 
 
 
@@ -1007,7 +1126,8 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
 
 
               })}} >open</Button>
-              <Button style = {{'margin': '5px'}} onClick = {()=>{
+              <Button style = {{'marginLeft': '5px'}} onClick = {this.Share}><img src = {Share}></img></Button>
+              <Button  variant="danger" style = {{'margin': '5px'}} onClick = {()=>{
 
 swal({
   title: "Are you sure?",
@@ -1048,7 +1168,7 @@ swal({
                       
 
 
-              }}>delete</Button>
+              }}> <img src = {Delete}></img> </Button>
 
                 </div>
         </ListGroup.Item>
@@ -1057,6 +1177,51 @@ swal({
 
     return (
       <div>
+      
+      <Modal size = 'lg' show = {this.state.show} onHide = {this.handleHide}>
+      
+      
+      <Modal.Header closeButton>
+          <Modal.Title>Share</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          
+          Collaborate safely with physicians arround the world with a single click
+      <br/>
+          <label htmlFor="basic-url"><b>Copy Link</b></label>
+                  <InputGroup className="mb-3">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="basic-addon3">
+                        {this.state.link}
+                      </InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <FormControl id="basic-url" aria-describedby="basic-addon3" />
+                  </InputGroup>
+
+                  <InputGroup className="mb-3">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="basic-addon3">
+                        Select user
+                      </InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <FormControl placeholder = "name" value = {this.state.d_user} onChange = {this.handleUpdateUser}id="basic-url" aria-describedby="basic-addon3" />
+                  </InputGroup>
+
+                  <QRcode value={this.state.link}/>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={this.handleSave}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+
+      
+      
+      
+      </Modal>
       <section id = "dicom-web-viewer">
         <div
 
@@ -1094,7 +1259,10 @@ swal({
         </div>
         <div>
           <Card className = 'Toolbar'>
-          <Card.Header>Toolbar</Card.Header>
+          
+          <Card.Header>Toolbar  <Button id = 'more' onClick = {this.getMenu} variant="light"> <img src= {abrirMenu}></img>  </Button></Card.Header>
+          
+         
         <Button className="Tools" id ='reset'><img src = {refresh} alt ='Reset'/></Button>
         <Button className="Tools" id="zoomIn"><img src = {zoom} alt ='Zoom In'/></Button>
         <Button className="Tools" id ='zoomOut'><img src = {zoomout} alt ='Zoom Out'/></Button>
@@ -1120,8 +1288,79 @@ swal({
           <Card.Header>Results</Card.Header>
           <Card.Body><li>Negative: {negative}</li><br/><li> Positive: {positive}</li></Card.Body>
       </Card>
-      </div>
+      <div style = {{position:'absolute', height:'91%', minWidth:'20%', visibility: this.state.visible,  top:'8.7%', right:'0%', background:'white'}} id = 'MenuBox'> 
 
+        <div>
+          <Card>
+
+
+            <Card.Header ><Button style = {{}} onClick = {this.getMenu} variant  = 'light'><img src = {Return}></img> </Button>  Menu </Card.Header>
+            <Card.Body>
+              
+              
+              <div className = 'AnnotationTools'>
+              <Badge variant="info">Annotation Tools</Badge>
+              <Button variant="secondary" onClick = {()=>{
+
+                    
+
+              }}>A1</Button>
+              <Button variant="secondary">A2</Button>
+              <Button variant="secondary">A3</Button>
+              <Button variant="secondary">A4</Button>
+
+              <div>
+
+                <Button variant = "secondary">Create Lesion</Button>
+                <Button variant ="secondary">Create Annotation</Button>
+
+
+              </div>
+
+              <Form>
+
+              <Form.Group controlId="exampleForm.ControlTextarea1">
+                  <Form.Label>Describe Lesion</Form.Label>
+                  <Form.Control as="textarea" rows="3" />
+                 </Form.Group>
+              </Form>
+              <Button>Delete</Button>
+              </div>
+              <div>
+
+
+                <Slider 
+                
+                rootStyle={{  // Give the slider some width
+                  position: 'relative',
+                  width: '100%',
+                  height: 80,
+                  border: '1px solid steelblue',
+                }} // inline styles for the outer div. Can also use className prop.
+                domain={[0, 100]}
+                values={[10]}
+                
+                >
+                  <div style={{position: 'absolute',
+                                width: '100%',
+                                height: 10,
+                                marginTop: 35,
+                                borderRadius: 5,
+                                backgroundColor: '#8B9CB6'}} />
+                </Slider>
+              </div>
+              
+              
+              
+              </Card.Body>
+          </Card>
+       
+
+       </div>
+       </div>
+    
+      </div>
+      
       </div>
     );
   }

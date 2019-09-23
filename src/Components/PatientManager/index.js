@@ -9,7 +9,7 @@ import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Loading from 'react-loading-components';
 import store from '../../store'
-
+import Delete from '../icons/delete5.png'
 import {
   Link, Redirect
 } from "react-router-dom";
@@ -134,7 +134,7 @@ class PatientManager extends Component {
         <td ><Link to = {'/Viewer/'+ item.id} >{item.id}</Link></td>
         <td><Link to = {'/Viewer/'+ item.id} >{item.name}</Link></td>
         <td><Link to = {'/Viewer/'+ item.id} >{item.last_name}</Link></td>
-        <td><Link to = {'/Viewer/'+ item.id} >{item.owner}</Link><Button style = {{'float': 'right'}} onClick = {()=>{
+        <td><Link to = {'/Viewer/'+ item.id} >{item.owner}</Link><Button variant ='danger' style = {{'float': 'right'}} onClick = {()=>{
 
 
             console.log('deleted');
@@ -177,7 +177,7 @@ class PatientManager extends Component {
             });
             
             
-        }}>delete</Button></td>
+        }}><img src = {Delete}></img></Button></td>
         </tr>
         
       )

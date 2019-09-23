@@ -3,7 +3,14 @@
     margin: 0;
   }
  
+#MenuBox{
 
+
+
+ border-left: 10px solid #92bfdd ;
+ border-bottom: 12px solid #92bfdd;
+ border-radius: 8px;
+}
 #dicom-web-viewer{
     width: 100vw;
     height: 70vh;
@@ -21,10 +28,10 @@
         justify-content: center;
         background: rgb(243, 243, 243);
     }
-
+    
     #dicom-img{
-        height: 70vh;
-        width: 35vw;
+        height: 100%;
+        width: 50%;
         background: rgb(61, 61, 61);
         margin-left: 0px;
 
@@ -32,8 +39,8 @@
 
     }
     .dicom-imgs{
-      height: 70vh;
-      width: 35vw;
+      height: 100%;
+      width: 50%;
       background: rgb(61, 61, 61);
       margin-left: 0px;
     }
@@ -83,6 +90,11 @@ margin-left:100px
   width: 12vw;
   margin: 3px;
   float: block;
+ 
+}
+.ItemClass {
+  border-left: 10px solid #bdb9b9;
+
 }
 .browser-container{
 
@@ -119,7 +131,7 @@ opacity:1;
 .Toolbar{
 
 
-  width: 10vw;
+  width: 5vw;
   height: 70vh;
 
 }
@@ -172,5 +184,19 @@ margin-bottom: 20px;
 margin-top : 20px;
 
 
+
+}
+
+
+
+#more {
+
+    margin-left: 10%;
+
+}
+
+.AnnotationTools Button{
+
+    margin: 1%;
 
 }
