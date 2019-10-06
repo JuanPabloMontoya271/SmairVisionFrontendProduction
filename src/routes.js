@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {Route, Switch} from 'react-router-dom';
-import HttpExample from './Components/Test/tests'
+import HttpExample from './Components/tests'
 import App from './App';
 import DicomViewer from './Components/DicomViewerComponent/index';
 import PatientManager from './Components/PatientManager/index';
 import Page404 from './Components/Page404/index';
 import MyEditor from './Components/Reports/editor'
 import HomeMenu from './Components/MenuPrincipal/menu'
-import UploadTest from './Components/UploadTest.js'
+import Viewport from './Components/Viewport.js'
 import Login from './Components/Login/index.js'
 import Profile from './Components/Profile/index.js'
 const AppRoutes = ()=>
@@ -18,7 +18,7 @@ const AppRoutes = ()=>
           <Route path  = '/Profile' component = {Profile}/>
           <Route path = '/DefaultView' component = {DicomViewer}/>
           <Route path = '/Reportes' component= {MyEditor}/>
-          <Route path ='/Test' component = {UploadTest}/>
+          <Route path ='/Test' component = {HttpExample}/>
           <Route path ='/HomeMenu' component = {HomeMenu}/>
 
           <Route path = '/' component= {Login}/>

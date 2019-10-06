@@ -33,6 +33,14 @@ const reducer  = (state, action) =>{
       auth_user: action.auth_user
     }
   }
+  else if (action.type === 'set_Image'){
+ 
+    return {
+
+      ...state,
+      Images: action.Images
+    }
+  }
 
   return state
 }
@@ -40,4 +48,4 @@ const reducer  = (state, action) =>{
 
 
 
-export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : ''});
+export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : '', Images: [{img:[{id:'', op:1}]}]});

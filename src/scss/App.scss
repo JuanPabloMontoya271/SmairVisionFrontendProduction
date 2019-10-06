@@ -200,3 +200,41 @@ margin-top : 20px;
     margin: 1%;
 
 }
+.loadingClass{
+
+    opacity: 1;
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+ 
+    width: 100%;
+    height: 150px;
+  
+   
+
+}
+.loadedClass{
+ opacity: 0;
+  width: 0;
+  height: 0;
+  
+
+}
+.DisplayClass{
+ 
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+ 
+}
+.DisplayClass :hover{
+  opacity: .7;
+}
+.noDisplay{
+
+  opacity: 0;
+  width: 0;
+  height: 0;
+  
+}
