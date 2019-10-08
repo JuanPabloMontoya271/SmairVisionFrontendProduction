@@ -41,6 +41,14 @@ const reducer  = (state, action) =>{
       Images: action.Images
     }
   }
+  else if (action.type === 'setVisible'){
+ 
+    return {
+
+      ...state,
+      visible: action.visible
+    }
+  }
 
   return state
 }
@@ -48,4 +56,4 @@ const reducer  = (state, action) =>{
 
 
 
-export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : '', Images: [{img:[{id:'', op:1}]}]});
+export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : '',visible: '', Images: [{img:[{id:'', op:1}]}]});

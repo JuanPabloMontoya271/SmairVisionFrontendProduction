@@ -4,10 +4,13 @@ import PropTypes from 'prop-types'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
+import Menu from '../LayerEditor/MenuTemplate.js'
+import LayerManager from '../LayerEditor/LayerManager.js'
 import icon from '../icons/icon2.png'
 import S3FileUpload from 'react-s3'
 import axios from 'axios'
 import Delete from '../icons/delete5.png'
+import More from '../icons/more.png'
 import Viewer from '../Viewer.js'
 import swal from 'sweetalert';
 import store from '../../store'
@@ -34,12 +37,15 @@ class PatientList extends Component{
 
       patients : [],
       loading:'hidden',
-      Images: []
+      Images: [],
+      LayerManagers : [],
+      visible: 'hidden'
+      
     }
     store.subscribe(()=>{
 
 
-      this.setState({organ:store.getState().organ, Modality: store.getState().Modality, Images: store.getState().Images})
+      this.setState({organ:store.getState().organ, Modality: store.getState().Modality, Images: store.getState().Images, visible : store.getState().visible})
       
     })
     this.Delete = this.Delete.bind(this)
@@ -111,7 +117,7 @@ class PatientList extends Component{
 
 
   render(){
-        let {patients, Images} = this.state
+        let {patients, LayerManagers, Images} = this.state
         console.log(patients);
 
         let list = patients.map((item, key) =>{
@@ -121,11 +127,23 @@ class PatientList extends Component{
           
          
                 <ListGroup.Item className = 'ItemClass' key ={key} > 
-                <div style = {{width: '100%', marginBottom: '30px', borderBottom : '10px solid #bdb9b9', padding: '15px'}}><b>{item.id}</b></div>
+                <div style = {{width: '100%', height:'100px', marginBottom: '100px', borderBottom : '10px solid #bdb9b9', padding: '15px'}}><div style = {{float: 'left', width: '85%', height: '100%', marginRight: '15px', paddingTop : '5px'}}><b>{item.id}</b> </div><div style = {{float: 'right', width: '10%', height: '100%', alignItems: 'center'}}>
+                  
+                  <Button variant = 'light' style = {{float: 'right'}} onClick = {()=>{
+                    if(this.state.visible === 'visible'){
+                      this.setState({visible: 'hidden'})
+                    }
+                    else{
+
+                      this.setState({ visible: 'visible'})
+                    }
+                    
+
+                  }}><img src = {More}></img></Button></div></div>
                 <div  style = {{display: 'inline-block' ,width: '60%'}}>Aqui va la info del paciente</div>
                 <div  style = {{  display: 'inline-block', width:'40%'}}>
                   <div style = {{width: '100%', height: '70%' , cursor: 'pointer'}} onClick= {()=>{
-                    if(Images.length <4){
+                    
                       console.log('display starts at', item.id);
                       Images.push({img:[{id:base_url +item.id, op: 1}, {id: 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm', op: .5}]})
                       console.log('Length', Images.length);
@@ -135,9 +153,7 @@ class PatientList extends Component{
 
                       
                        
-                    }else if (Images.length >= 4){
-                      alert('Limite alcanzado')
-                    }
+                  
               
                     
                     
@@ -212,10 +228,10 @@ swal({
           
           )
         })
-
+     
         return (
 
-     
+     <div>
       <div >
         <Card style = {this.props.style}>
           <Card.Header as ='h5' style = {{height: '70px'}}>
@@ -232,9 +248,12 @@ swal({
           </Card.Body>
           
           </Card>
-      
+
+        
+        
       </div>
-      
+      <div style = {{visibility : this.state.visible, zIndex: 1}} ><Menu ids = 'key' children = {<LayerManager/>}/></div>
+    </div>
     )
   }
   }

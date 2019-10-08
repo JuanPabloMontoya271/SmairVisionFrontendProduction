@@ -1,0 +1,59 @@
+.Editor {
+
+    position: absolute;
+    width: 300px;
+    height: 600px;
+    top: 0;
+    right:0;
+    z-index: 3;
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+user-select: none;
+    
+
+}
+.resizer{
+
+    background-color: blue;
+    width: 10%;
+    height: 10%;
+    z-index: 4;
+    opacity : 0;
+}
+.resizer.nw{
+
+    position: absolute;
+    top:-1px;
+    left: -1px;
+  
+    cursor: nw-resize;
+
+}
+.resizer.ne{
+
+    position: absolute;
+    top:-1px;
+    right: -1px;
+  
+    cursor: ne-resize;
+
+}
+.resizer.se{
+
+    position: absolute;
+    bottom:-1px;
+    right: -1px;
+   
+    cursor: se-resize;
+
+}
+.resizer.sw{
+
+    position: absolute;
+    bottom:-1px;
+    left: -1px;
+   
+    cursor: sw-resize;
+
+}
