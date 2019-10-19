@@ -637,7 +637,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
           // Prevent page from scrolling
           return false;
         } catch (e) {
-          console.log(e);
+       
         }
 
       });
@@ -660,7 +660,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
           // Prevent page from scrolling
           return false;
         } catch (e) {
-          console.log(e);
+          
         }
 
       });
@@ -782,7 +782,8 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
               break;
           
             default:
-              console.log('ohne Werkzeug');
+            
+
               ctx.beginPath();
               ctx.rect(coords.x, coords.y, 100,100)
               ctx.lineWidth = "6";
@@ -1042,7 +1043,8 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
               <Button key = {key} className= 'botones' style = {{visibility:'visible' }} onClick = {
 
                 ()=>{
-                  console.log(item.id);
+                 
+
                   let link = 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/'
                   let wadouri = 'wadouri:'+ link+item.id
                   cornerstone.loadAndCacheImage(wadouri).then((image)=>{
@@ -1051,7 +1053,7 @@ const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll'];
                   cornerstone.displayImage(this.dicomImg, image)
                   cornerstone.displayImage(this.dicomImg2, image)
             
-                  console.log('displayed');
+           ;
                 
                   
                 } catch (error) {
@@ -1139,11 +1141,11 @@ swal({
 .then((willDelete) => {
   if (willDelete) {
 
-    console.log('deleted')
+
     axios.put('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb', {'data':{'id':item.id}}).then((res)=>{
 
       
-   console.log('deleted', item.id);
+ 
    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.mname, table: 'smairvisiondb'}}).then((res)=>{
         console.log(res.data.response.Items);
               let resArray = res.data.response.Items

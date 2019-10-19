@@ -23,8 +23,10 @@ class Menu extends Component{
   componentDidMount(){
 
     const ed = document.getElementById(this.props.ids)
+    const selector  = document.getElementById('selector')
     let isResizing = false
-    ed.addEventListener('mousedown', (e)=>{
+    let k = .5;
+    selector.addEventListener('mousedown', (e)=>{
 
         if (!isResizing){
         window.addEventListener('mousemove', mouseMove)
@@ -35,8 +37,8 @@ class Menu extends Component{
                 let newX = prevX- e.clientX
                 let newY = prevY - e.clientY
                 let rect = ed.getBoundingClientRect()
-                ed.style.left = rect.left -newX + "px"
-                ed.style.top = rect.top -newY + "px"
+                ed.style.left = (rect.left -newX) + "px"
+                ed.style.top = (rect.top -newY) + "px"
                 prevX = e.clientX;
                 prevY = e.clientY;
         }
@@ -53,8 +55,8 @@ class Menu extends Component{
 
 
         resizer.addEventListener('mousedown', mousedown)
-        const maxH = 300;
-        const maxW = 200;
+        const maxH = 600;
+        const maxW = 400;
         ed.style.width = maxW + 'px'
         ed.style.height = maxH + 'px'
         function mousedown(e){
@@ -146,15 +148,16 @@ class Menu extends Component{
       return (
 
      
-      <div id = {this.props.ids} className = 'Editor' >
+      <div id = {this.props.ids}  className = 'Editor' >
+         
           <div  className = 'resizer ne'></div>
           <div  className = 'resizer nw'></div>
           <div  className = 'resizer se'></div>
           <div  className = 'resizer sw'></div>
         <Card bg="dark" text="white" style = {{width: '100%', height: '100%', borderRadius: '10px'}}>
 
-            <Card.Header style = {{cursor: 'move'}} >Layer Editor</Card.Header>
-            <Card.Body>{this.props.children}</Card.Body>
+            <Card.Header style = {{cursor: 'move'}} > <div id= 'selector' className = 'selector'></div>Layer Editor</Card.Header>
+            <Card.Body className= 'Card' style = {{overflowY:'scroll'}}>{this.props.children}</Card.Body>
         </Card>
       </div>
       

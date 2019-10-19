@@ -74,12 +74,11 @@ class Thumbnail extends Component {
           let { imgData, imgRawData } = this.state
         // imgData only contains certain data, look at the object in 
         // console.log(img.Data) to view properties E.g.
-          console.log(imgData.rows,'Rows in image data')
+    
 
         // imgRawData contains all the infromation. For usage, you
         // need to use th specific code. E.g. with Int value
-          console.log(imgRawData.uint16('x00280010'),'Rows in Image Raw Data ')
-
+      
 
       })
     })

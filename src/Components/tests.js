@@ -4,9 +4,11 @@ import Viewport from './Viewport.js'
 import ViewportDisplay from './ViewportDisplay.js'
 import PatientList from './PatientList/Patients.js'
 import Button from 'react-bootstrap/Button';
+import Fade from 'react-bootstrap/Fade';
 import Menu from './LayerEditor/MenuTemplate.js'
 import LayerManager from './LayerEditor/LayerManager.js'
 import store from '../store'
+let tdiv
 let array2 = ['https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm']
 let array = ['https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000fe35a-2649-43d4-b027-e67796d412e0_1565669926215.dcm']
 class HttpExample extends Component{
@@ -19,45 +21,205 @@ class HttpExample extends Component{
     open: '-10px',
     organ: '',
     images: [],
+    scale: .5,
+    prueba: 0,
+    lastX:0,
+    lastY:0,
+    visibility: false
+    
   
 
   }
+  this.mouseDown = this.mouseDown.bind(this)
+
+  this.mouseMove = this.mouseMove.bind(this)
+  this.mouseWheel = this.mouseWheel.bind(this)
+  this.mouseUp =this.mouseUp.bind(this)
+  
 
   store.subscribe(()=>{
     let img = store.getState().Images
     img = img.slice(-4)
-    console.log('img : ', img);
-    
+   
     this.setState({organ:store.getState().organ, Modality: store.getState().Modality, images: img})
     
   })
   }
+  componentDidMount(){
+    
+  }
+  mouseDown(e){
+   try {
+     
+    let {images}= this.state
+    let key = Number(e.path[3].attributes.name.value)
+    let nImages = images
+    let tempViewport = nImages[key].viewport
+    let lastX = e.pageX;
+    let lastY = e.pageY;
+    
+    
+    let button = e.which
+    tempViewport.reset = false
+  
+
+    
+  
+   
+    this.setState({images: nImages, lastX: lastX, lastY: lastY})
+    
+    tdiv =document.getElementById(nImages[key].imgId)
+    tdiv.addEventListener('mousemove', this.mouseMove)
+    tdiv.addEventListener('mouseup', this.mouseUp)
+
+   } catch (error) {
+     
+   }
+   
+  }
+  mouseMove(e){
+    try {
+      
+      let {images, lastX, lastY}= this.state
+    let key  = Number(e.path[3].attributes.name.value)
+    let nImages = images
+    let tempViewport = nImages[key].viewport
+    let deltaX = e.pageX -lastX
+    let deltaY = e.pageY -lastY
+    
+    
+    
+   
+    if(e.which ===3){
+
+      tempViewport.translation.x += (deltaX / tempViewport.scale);
+      tempViewport.translation.y += (deltaY / tempViewport.scale);
+
+
+    }
+    else if(e.which ===1){
+
+      tempViewport.voi.windowWidth += (deltaX / tempViewport.scale);
+      tempViewport.voi.windowCenter += (deltaY / tempViewport.scale);
+
+    }
+    
+    nImages[key].viewport = tempViewport
+    this.setState({images: nImages, lastX : e.pageX, lastY: e.pageY})
+    
+    
     
 
 
 
+    } catch (error) {
+      
+    }
+    
+   
+      
+  }
+  mouseUp(){
+    tdiv.removeEventListener('mousemove', this.mouseMove)
+    tdiv.removeEventListener('mouseup', this.mouseUp)
+    
+  }
+mouseWheel(e){
+  try {
+    let {images} = this.state
+  let key  = Number(e.path[3].attributes.name.value)
+  let nImages = images
+  let tempViewport = nImages[key].viewport
+
+  if(Number(e.wheelDelta)<0 ){
+    tempViewport.scale -=.25
+    this.setState({images: nImages})
+  }
+  else {
+    tempViewport.scale += .25
+    this.setState({images: nImages})
+
+  }
+ 
+  } catch (error) {
+    
+  }
+  
+  
+}
+
+
   render(){
-      console.log('test',this.state.images);
-      
-      let {images} =this.state
-      
      
       
+      let {images} =this.state
+      let nImages = images
+      let self = this
+      
       let list  = images.map((item, key)=>{
-        let imageArray = item.img.map((item2, key)=>{
+        const div = document.getElementById(item.imgId)
+        if (div!=null){
+          const self  = this
+
+          div.addEventListener('mousedown', this.mouseDown)
+          const mouseWheelEvents = ['mousewheel', 'DOMMouseScroll']
+          mouseWheelEvents.forEach(function(eventType){
+
+            div.addEventListener(eventType, self.mouseWheel)
+          })
+
+        }
+         
+      
+        
+        
+        let imageArray = item.img.map((item2, key2)=>{
           
           
           return (
-            <div key = {key} style = {{position: 'absolute', width:'100%', height:'100%', left:'0', top:'0', opacity: item2.op}}>
+
+            <div key = {key2} style = {{position: 'absolute', width:'100%', height:'100%', left:'0', top:'0', opacity: item2.op}} onMouseOver = {()=>{
+              this.setState({visibility: true})
+              let body = document.getElementsByTagName('body')
+              
+              body[0].style.overflow = 'hidden'
+              
+
+            
+            }} onMouseLeave = {()=>{
+              this.setState({visibility : false})
+              let body = document.getElementsByTagName('body')
+              
+              body[0].style.overflow = 'scroll'
+            }}>
              
-          <ViewportDisplay display = '1' link = {item2.id} />
+          <ViewportDisplay reference = {images} key1 ={key} key2 = {key2} viewport = {item.viewport} prueba = {this.state.prueba} display = '1' link = {[item2.id]} />
+            <Fade in = { this.state.visibility}>
+
+            <div style = {{borderBottom: 'solid 3px #70C5FF',borderRight:'solid 3px #70C5FF',borderLeft: 'solid 3px #70C5FF',position : 'absolute', width : '100%', height: '10%', backgroundColor : 'blue',left: 0, bottom: '0px'}}>
+              
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              <div style = {{width: '10%', height: '100%' , display: 'inline-block'}}> <Button style = {{width: '100%', height: '100%'}}> h1</Button></div>
+              
+             
+            </div>
+            </Fade>
+          
           </div>
           )
           
           
         })
         return (
-        <div key  = {key} style = {{ position: 'relative', left: '0', top: '0',display: 'inline-block',width: '50%', height:'50%' }}>
+        <div id = {item.imgId} name = {key} key  = {key} style = {{ position: 'relative', left: '0', top: '0',display: 'inline-block',width: '50%', height:'50%' }}>
             {imageArray}
            
         </div>
@@ -89,8 +251,6 @@ class HttpExample extends Component{
         </div>
           
     
-      <Button onClick= {()=>{this.setState({array_de_ids:array})}}>hola este es un boton</Button>
-      <Button onClick= {()=>{this.setState({array_de_ids:array2})}}>hola este es un boton</Button>
      
       </div>
       

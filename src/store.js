@@ -49,6 +49,12 @@ const reducer  = (state, action) =>{
       visible: action.visible
     }
   }
+  else if (action.type === 'setViewport'){
+    return {
+      ...state,
+      viewport: action.viewport
+    }
+  }
 
   return state
 }
@@ -56,4 +62,4 @@ const reducer  = (state, action) =>{
 
 
 
-export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : '',visible: '', Images: [{img:[{id:'', op:1}]}]});
+export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : '',visible: '', viewport : {},Images: [{img:[{id:'', op:1}]}]});

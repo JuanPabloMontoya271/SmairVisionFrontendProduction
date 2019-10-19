@@ -45,19 +45,19 @@ class PatientList extends Component{
     store.subscribe(()=>{
 
 
-      this.setState({organ:store.getState().organ, Modality: store.getState().Modality, Images: store.getState().Images, visible : store.getState().visible})
+      this.setState({organ:store.getState().organ, Modality: store.getState().Modality, Images: store.getState().Images})
       
     })
     this.Delete = this.Delete.bind(this)
     axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
-      console.log(res.data.response.Items);
+     
       let resArray = res.data.response.Items
-      console.log(resArray);
+   
       resArray.sort(function (a,b){
         var dateA = new Date(a.date), dateB = new Date(b.date);
         return (dateB - dateA);
       })
-      console.log("sorted",resArray);
+      
       this.setState({patients:resArray, loading: 'hidden' })
 
 
@@ -84,14 +84,14 @@ class PatientList extends Component{
       //Upload File to s3
       S3FileUpload.uploadFile(newFile, config)
       .then((data)=>{
-          console.log(data);
+         
           this.setState({loading: 'hidden'})
 
           axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb',{data: {id: newFileName,auth: true, file_name: newFileName, user:this.props.user, patient_id: this.props.patient, date: DateX}} ).then((res)=>{
-      console.log(res);
+    
 
       axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
-        console.log(res.data.response.Items);
+      
         let resArray = res.data.response.Items
       
         
@@ -118,7 +118,7 @@ class PatientList extends Component{
 
   render(){
         let {patients, LayerManagers, Images} = this.state
-        console.log(patients);
+       
 
         let list = patients.map((item, key) =>{
 
@@ -142,13 +142,25 @@ class PatientList extends Component{
                   }}><img src = {More}></img></Button></div></div>
                 <div  style = {{display: 'inline-block' ,width: '60%'}}>Aqui va la info del paciente</div>
                 <div  style = {{  display: 'inline-block', width:'40%'}}>
-                  <div style = {{width: '100%', height: '70%' , cursor: 'pointer'}} onClick= {()=>{
+                  <div style = {{width: '100%', height: '70%' , cursor: 'pointer'}} id = {item.id} draggable onDragStart = {(e)=>{
+                    const div = document.getElementById('dropper')
+                    div.style.visibility= 'visible'
+                    div.style.border = 'dashed 3px gray'
+                    console.log(e.target.id);
+                    let rndm = Math.random()*10
+                    let imgObj = {id:base_url +item.id,name: item.id, op: .5}
+                      let obj = JSON.stringify(imgObj)
+                    e.dataTransfer.setData('obj',obj );
+                  }} onDragEnd = {(e)=>{
+                    console.log(e);
                     
-                      console.log('display starts at', item.id);
-                      Images.push({img:[{id:base_url +item.id, op: 1}, {id: 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm', op: .5}]})
-                      console.log('Length', Images.length);
-                      
-                      console.log(Images);
+                    const div = document.getElementById('dropper')
+                    div.style.visibility= 'hidden'
+                  }} onClick= {()=>{
+                    
+                      let rndm = Math.random()*10
+                      let imgObj = {imgId:rndm+item.id,viewport: {scale: .5}, img:[{id:base_url +item.id,name: item.id, op: .5}, {name: '000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm', id: 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm', op: .5}]}
+                      Images.push(imgObj)
                       store.dispatch({type: 'set_Image', 'Images': Images})
 
                       
@@ -182,11 +194,11 @@ swal({
 .then((willDelete) => {
   if (willDelete) {
 
-    console.log('deleted')
+  
     axios.put('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb', {'data':{'id':item.id}}).then((res)=>{
 
       
-   console.log('deleted', item.id);
+ 
    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
         console.log(res.data.response.Items);
               let resArray = res.data.response.Items
@@ -252,7 +264,7 @@ swal({
         
         
       </div>
-      <div style = {{visibility : this.state.visible, zIndex: 1}} ><Menu ids = 'key' children = {<LayerManager/>}/></div>
+      <div style = {{visibility : this.state.visible, zIndex: 1}} ><Menu ids = 'key' children = {<LayerManager />}/></div>
     </div>
     )
   }
