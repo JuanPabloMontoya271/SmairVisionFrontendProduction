@@ -159,7 +159,7 @@ class PatientList extends Component{
                   }} onClick= {()=>{
                     
                       let rndm = Math.random()*10
-                      let imgObj = {imgId:rndm+item.id,viewport: {scale: .5}, img:[{id:base_url +item.id,name: item.id, op: .5}, {name: '000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm', id: 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm', op: .5}]}
+                      let imgObj = {imgId:rndm+item.id,viewport: {scale: .5}, img:[{id:base_url +item.id,name: item.id, op: .5}]}
                       Images.push(imgObj)
                       store.dispatch({type: 'set_Image', 'Images': Images})
 

@@ -10,17 +10,20 @@ import HomeMenu from './Components/MenuPrincipal/menu'
 import Viewport from './Components/Viewport.js'
 import Login from './Components/Login/index.js'
 import Profile from './Components/Profile/index.js'
+import PdfGenerator from './Components/ReportGenerator/pdf.js'
+import PatientTable from './Components/PatientManager/patientTable.js'
 const AppRoutes = ()=>
   <App>
       <Switch>
           <Route path='/Patients/:param' component = {PatientManager}/>
+          <Route path='/Patients2/:param' component = {PatientTable}/>
           <Route path='/Viewer/:param' component = {DicomViewer}/>
           <Route path  = '/Profile' component = {Profile}/>
           <Route path = '/DefaultView' component = {DicomViewer}/>
           <Route path = '/Reportes' component= {MyEditor}/>
-          <Route path ='/Test' component = {HttpExample}/>
+          <Route path ='/Test/:key/:param' component = {HttpExample}/>
           <Route path ='/HomeMenu' component = {HomeMenu}/>
-
+          <Route path = '/PdfGenerator/:owner/:patient' component = {PdfGenerator}/>
           <Route path = '/' component= {Login}/>
 
           <Route  component = {Page404}/>

@@ -8,6 +8,12 @@ import Fade from 'react-bootstrap/Fade';
 import Menu from './LayerEditor/MenuTemplate.js'
 import LayerManager from './LayerEditor/LayerManager.js'
 import store from '../store'
+const headers = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json',
+  'Authorization': '062e7186-1805-4396-b6a2-2dccc3764c89' //Get your API key from https://portal.api2pdf.com
+}
+
 let tdiv
 let array2 = ['https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm']
 let array = ['https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000924cf-0f8d-42bd-9158-1af53881a557_1565107882482.dcm','https://bucketdeprueba314.s3.us-east-2.amazonaws.com/Production/000fe35a-2649-43d4-b027-e67796d412e0_1565669926215.dcm']
@@ -25,13 +31,16 @@ class HttpExample extends Component{
     prueba: 0,
     lastX:0,
     lastY:0,
-    visibility: false
+    visibility: false,
+    patient_id : this.props.match.params
     
   
 
   }
+ 
+  
   this.mouseDown = this.mouseDown.bind(this)
-
+  this.generatePDF = this.generatePDF.bind(this)
   this.mouseMove = this.mouseMove.bind(this)
   this.mouseWheel = this.mouseWheel.bind(this)
   this.mouseUp =this.mouseUp.bind(this)
@@ -47,6 +56,28 @@ class HttpExample extends Component{
   }
   componentDidMount(){
     
+  }
+  generatePDF(e) {
+    fetch('https://v2018.api2pdf.com/chrome/html', {
+      method: 'post',
+      headers: headers,
+      body: JSON.stringify({html: '<html><head><title>Boson Innovations</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></head><body><script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script><script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script><p>hola soy monty</p><img src="https://picsum.photos/700/400?random" class="img-fluid" alt="Responsive image"></body></html>', inlinePdf: true, fileName: 'test.pdf' })
+    }).then(res=>res.json())
+      .then(
+        res => {
+          console.log(res);
+
+          const url = window.URL.createObjectURL(new Blob([res.pdf]))
+          console.log(url);
+          window.open(res.pdf)
+          const link = document.createElement('a');
+link.href = res.pdf;
+document.body.appendChild(link);
+link.download= 'hola.pdf';
+        } 
+     
+      
+      );
   }
   mouseDown(e){
    try {
@@ -150,8 +181,7 @@ mouseWheel(e){
 
 
   render(){
-     
-      
+   
       let {images} =this.state
       let nImages = images
       let self = this
@@ -227,34 +257,44 @@ mouseWheel(e){
         )
          
       })
-        
-      return (
+      if (this.props.match.params.key =='admin'){
+        return (
 
      
-      <div>
-      
-      <div onClick = {()=>{
-        if (this.state.hidden === 'hidden'){
-
-          this.setState({hidden: 'visible', open : '24.6%'})
-        }
-        else{
-          this.setState({hidden: 'hidden', open: '-0.4%'})
-        }
-      }}style = {{ zIndex: 1,cursor: 'pointer',position:'absolute', width: '30px', height: '70px', backgroundColor:'red',left:this.state.open, borderRadius: '20px', border: 'solid blue 5px'}}></div>
-        <div style = {{display: 'block', width: '100%'}}>
-        
-        <PatientList patient  = 'Paciente Rata_539.4827566594263_1568912556160' user = 'admin' style = {{zIndex: 1,visibility: this.state.hidden,width: '25%', height: '100vh', position: 'absolute'}} />
-        <div style = {{width: '100vw', height: '100vh', backgroundColor:'black', textAlign:'center'} }>{list}
-         </div>
-        
-        </div>
+          <div>
           
+          <div onClick = {()=>{
+            if (this.state.hidden === 'hidden'){
     
-     
-      </div>
+              this.setState({hidden: 'visible', open : '24.6%'})
+            }
+            else{
+              this.setState({hidden: 'hidden', open: '-0.4%'})
+            }
+          }}style = {{ zIndex: 1,cursor: 'pointer',position:'absolute', width: '30px', height: '70px', backgroundColor:'red',left:this.state.open, borderRadius: '20px', border: 'solid blue 5px'}}></div>
+            <div style = {{display: 'block', width: '100%'}}>
+            
+            <PatientList patient  = {this.props.match.params.param} user = 'admin' style = {{zIndex: 1,visibility: this.state.hidden,width: '25%', height: '100vh', position: 'absolute'}} />
+            <div style = {{width: '100vw', height: '100vh', backgroundColor:'black', textAlign:'center'} }>{list}
+             </div>
+            
+            </div>
+              
+        
+          <Button onClick = {this.generatePDF}>generatePDF</Button>
+          </div>
+          
+        )
+        
+
+      }
+      else {
+        return (
+
+          <h1>Auth Error</h1>
+        )
+      }  
       
-    )
   }
   }
 

@@ -131,7 +131,7 @@ class PatientManager extends Component {
 
         <tr key = {item.id} >
         
-        <td ><Link to = {'/Viewer/'+ item.id} >{item.id}</Link></td>
+        <td ><Link to = {'/Test/'+ this.props.match.params.param+'/' +item.id} >{item.id}</Link></td>
         <td><Link to = {'/Viewer/'+ item.id} >{item.name}</Link></td>
         <td><Link to = {'/Viewer/'+ item.id} >{item.last_name}</Link></td>
         <td><Link to = {'/Viewer/'+ item.id} >{item.owner}</Link><Button variant ='danger' style = {{'float': 'right'}} onClick = {()=>{

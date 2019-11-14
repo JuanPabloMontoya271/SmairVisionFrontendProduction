@@ -80,13 +80,8 @@ class LayerManager extends Component{
                 
                 <div style = {{display: 'inline-block'}}><p>Image {key2} : {item2.name}</p></div><div style ={{ marginLeft : '20px',alignItems: 'right',display: 'inline-block'}}><Button onClick ={()=>{
 
-let filter =NewImages[key].img.filter(function (value, index, arr){
-  return value.name == item2.name
 
-})
-console.log(filter, NewImages);
-this.setState({images: filter})
-store.dispatch({type: 'set_Image', Images: NewImages})
+
 
 
                 }}>Delete</Button></div>

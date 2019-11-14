@@ -5,8 +5,10 @@ import Viewer from './Components/Viewer'
 import Upload from './Components/SourceTree/Upload.js'
 import Content from './Components/Content/Content.js'
 import PropTypes from 'prop-types'
-
-
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
+import DateFnsUtils from '@date-io/date-fns';
+import MyAppBar from  './Components/PatientManager/AppBar.js'
 class App extends Component {
   
   constructor (props){
@@ -43,16 +45,19 @@ class App extends Component {
     console.log(children);
   
     return (
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <div>
+      
       <div style = {{'visibility': visible}}>
 
-      <Header />
+      <MyAppBar/>
       </div>
       
       <Content body = {children}/>
 
 
       </div>
+      </MuiPickersUtilsProvider>
     );
   }
 }
