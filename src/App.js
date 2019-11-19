@@ -20,6 +20,10 @@ class App extends Component {
   }
   componentDidMount(){
     const currentloc = window.location.pathname
+    console.log(currentloc);
+    const c = currentloc.split('/')
+    console.log(c)
+    
     let visibility = 'visible'
     switch (currentloc) {
       case '/':
@@ -42,7 +46,7 @@ class App extends Component {
     
     const {children}= this.props;
     let {visible}  = this.state
-    console.log(children);
+  
   
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -50,7 +54,7 @@ class App extends Component {
       
       <div style = {{'visibility': visible}}>
 
-      <MyAppBar/>
+      <MyAppBar />
       </div>
       
       <Content body = {children}/>

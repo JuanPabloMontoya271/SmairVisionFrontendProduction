@@ -16,14 +16,14 @@ const AppRoutes = ()=>
   <App>
       <Switch>
           <Route path='/Patients/:param' component = {PatientManager}/>
-          <Route path='/Patients2/:param' component = {PatientTable}/>
+          <Route path='/Patients2/:key/:owner' component = {PatientTable}/>
           <Route path='/Viewer/:param' component = {DicomViewer}/>
           <Route path  = '/Profile' component = {Profile}/>
           <Route path = '/DefaultView' component = {DicomViewer}/>
           <Route path = '/Reportes' component= {MyEditor}/>
           <Route path ='/Test/:key/:param' component = {HttpExample}/>
           <Route path ='/HomeMenu' component = {HomeMenu}/>
-          <Route path = '/PdfGenerator/:owner/:patient' component = {PdfGenerator}/>
+          <Route path = '/PdfGenerator/:key/:owner/:patient/:ruta' component = {PdfGenerator}/>
           <Route path = '/' component= {Login}/>
 
           <Route  component = {Page404}/>

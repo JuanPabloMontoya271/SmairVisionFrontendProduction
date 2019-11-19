@@ -50,7 +50,7 @@ validate =  () =>{
     console.log(res.data.response, res.data.auth);
     if (res.data.auth){
       store.dispatch({type: 'auth_user', auth_user : res.data.response})
-       window.open('/Patients/'+res.data.response)
+       window.open('/Patients2/key/'+res.data.response)
     }
     else{
       alert('error')

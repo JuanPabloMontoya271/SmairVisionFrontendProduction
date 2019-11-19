@@ -22,18 +22,20 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
-
+import store from '../../store'
 const useStyles2 = makeStyles({
     list: {
-      width: '10vw',
+      width: '15vw',
     },
     fullList: {
       width: 'auto',
     },
   });
 const useStyles = makeStyles(theme => ({
+root: {shadows: ["none"]},
   grow: {
     flexGrow: 1,
+    shadows: ["none"],
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -96,11 +98,23 @@ const useStyles = makeStyles(theme => ({
 export default function MyAppBar() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null); 
+  const [patientData, setPatientData] = React.useState({})
+  store.subscribe(()=>{
+    let img = store.getState().auth_user
+    console.log(img)
+    setPatientData(img)
+    
+   
+    
+  })
+  
+    
+    
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+    
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -199,22 +213,42 @@ export default function MyAppBar() {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
+        {['Perfil', 'Pacientes', 'Estadisticas', 'Cerrar Sesión'].map((text, index) => (
+          <ListItem button key={text} onClick = {()=>{console.log('clicked');
+                console.log(patientData.owner);
+                
+        
+         let owner = patientData.owner
+         let patient = patientData.patient
+         let auth = 'auth/'
+         let a = document.createElement("a")
+         switch (text) {
+             case 'Perfil':
+                a.href = '/Perfil/'+auth+ owner+'/'
+                 break;
+            case 'Pacientes':
+                    a.href = '/Patients2/'+auth+ owner+'/'
+                    break;
+            case 'Cerrar Sesion':
+                
+                a.href = '/'
+                break;
+             default:
+                    a.href = '/'
+                 break;
+         }
+          
+         
+          a.click()
+          
+          }}>
             <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>
       <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+   
     </div>
   );
 
@@ -247,7 +281,7 @@ export default function MyAppBar() {
 
   return (
     <div className={classes.grow}>
-      <AppBar style = {{backgroundColor: ' #70C5FF'}}position="static">
+      <AppBar className = {classes.root} style = {{backgroundColor: ' #70C5FF'}}position="static">
         <Toolbar>
           <IconButton
             edge="start"

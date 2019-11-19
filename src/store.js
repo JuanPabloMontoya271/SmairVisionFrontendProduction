@@ -55,6 +55,12 @@ const reducer  = (state, action) =>{
       viewport: action.viewport
     }
   }
+  else if (action.type === 'setData'){
+    return {
+      ...state,
+      data: action.data
+    }
+  }
 
   return state
 }
