@@ -46,6 +46,10 @@ let boleano = false;
 let mousex;
 let mousey;
 let rois =[];
+
+
+
+
 let test = 'https://bucketdeprueba314.s3.us-east-2.amazonaws.com/00aecb01-a116-45a2-956c-08d2fa55433f.dcm'
 const config ={
   bucketName: 'bucketdeprueba314',
