@@ -11,7 +11,6 @@ import S3FileUpload from 'react-s3'
 import axios from 'axios'
 import Delete from '../icons/delete5.png'
 import More from '../icons/more.png'
-import Viewer from '../Viewer.js'
 import swal from 'sweetalert';
 import store from '../../store'
 let newFileName;
