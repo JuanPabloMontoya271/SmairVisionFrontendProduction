@@ -14,7 +14,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import  {green}  from '@material-ui/core/colors'
-import { loadingBarFill } from '@aws-amplify/ui';
+
 import MaterialTable from 'material-table';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
