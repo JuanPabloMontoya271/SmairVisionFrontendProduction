@@ -4,8 +4,9 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import AppRoutes from './routes'
 import {BrowserRouter as Router} from 'react-router-dom';
-
+import { CookiesProvider } from 'react-cookie'
 //Router
+
 
 ReactDOM.render(<Router><AppRoutes/></Router>, document.getElementById('root'));
 

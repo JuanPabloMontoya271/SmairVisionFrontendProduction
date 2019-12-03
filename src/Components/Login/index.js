@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import '../../scss/App.scss'
 import axios from 'axios'
+import uuid from 'uuid'
 import swal from 'sweetalert';
 import store from '../../store'
 class Login extends Component{
@@ -44,13 +45,18 @@ this.setState({
 }
 validate =  () =>{
     
-    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/auth', {data:{key: 'user', eq: this.state.user, table : 'Users', password: this.state.pass}}).then((res)=>{
+    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/auth', {data:{key: 'user', eq: this.state.user, session:{clave: Math.random().toString(),date: new Date(), uuid: uuid.v4()}, table : 'Users', password: this.state.pass}}).then((res)=>{
 
 
     console.log(res.data.response, res.data.auth);
+
+    
     if (res.data.auth){
-      store.dispatch({type: 'auth_user', auth_user : res.data.response})
-       window.open('/Patients2/key/'+res.data.response)
+      console.log(res.data.Sesion, res.data.device)
+      store.dispatch({type: 'auth_user', auth_user : {res:res.data.response, Sesion: res.data.Sesion, device: res.data.device}})
+      const a  = document.createElement('a')
+      a.href = 'Patients2/'+res.data.Sesion+'/'+res.data.response
+      a.click();  
     }
     else{
       alert('error')

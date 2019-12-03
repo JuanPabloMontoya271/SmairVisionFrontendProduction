@@ -12,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
+import uuid from 'uuid'
 function Table (props){
     
     const datap = props.data
@@ -118,6 +119,7 @@ class PatientTable extends Component {
         items: [
   
         ],
+        auth:{},
         show: [],
         
         in_Progress:[],
@@ -195,10 +197,12 @@ class PatientTable extends Component {
        
   
       }
+ 
     store.dispatch({type: 'auth_user', auth_user: {owner: this.state.owner}})
   
     }
     componentDidMount(){
+  
         let pos;
         let location = navigator.geolocation.getCurrentPosition((position)=>{
      
@@ -213,8 +217,8 @@ class PatientTable extends Component {
       .then((res)=>{
   
   
-        console.log(res);
-        this.setState({items: res.data.response['Items'], loading: 'hidden'})
+        console.log(JSON.parse(res.data.response));
+        this.setState({items: JSON.parse(res.data.response)['Items'], loading: 'hidden'})
         
       });
   
@@ -247,7 +251,7 @@ class PatientTable extends Component {
                 
                 let timeStamp = (new Date()).getTime();
                 let unique_id = newData.name+'_'+(Math.random()*1000)+'_'+timeStamp
-                let ids= unique_id.toString()
+                let ids= uuid.v4()
                 let temp_item= {id: ids, patient: ids,name: newData.name, last_name: newData.last_name, owner :this.state.owner,fecha: newData.fecha, fecha_de_ingreso :new Date()}
                
 
@@ -258,7 +262,7 @@ class PatientTable extends Component {
 
 
              console.log(res);
-              this.setState({items: res.data.response['Items'], loading: 'hidden'})
+              this.setState({items: JSON.parse(res.data.response)['Items'], loading: 'hidden'})
               resolve();
 
 });
@@ -281,7 +285,7 @@ class PatientTable extends Component {
             
             
                          console.log(res);
-                          this.setState({items: res.data.response['Items'], loading: 'hidden'})
+                          this.setState({items: JSON.parse(res.data.response)['Items'], loading: 'hidden'})
                           resolve();
             
             }); 
@@ -304,7 +308,7 @@ class PatientTable extends Component {
       
       
                                console.log(res);
-                                this.setState({items: res.data.response['Items'], loading: 'hidden'})
+                                this.setState({items: JSON.parse(res.data.response)['Items'], loading: 'hidden'})
                                 resolve();
             
                   });

@@ -1329,12 +1329,12 @@ render(){
             steps = {['Datos Personales', 'Alergias', 'Otras Alergias', 'hkdsjhkdjhks', 'ksjdhksjhkdj', 'jaksjkasjahks','jashkajhskajshka', '19812098210982']
           }
             props = {{owner: this.state.owner,titles : ['Datos del Paciente'], inputs :[
-              {type: 'input',label: 'Nombre', sec: 'datos', index : 0},
-               {type: 'input',label: 'Apellido', sec: 'datos',index: 0},
+             
+               
                 {type: 'input',label: 'Edad',sec: 'datos', index: 0},
                  {type: 'MS', sec: 'datos',ops : ['Masculino', 'Femenino', 'Otro'],label: 'Sexo', index: 0},
                  {type: 'MS', sec: 'datos',ops : ['Soltero', 'Casado', 'Otro'],label: 'Estado Civil', index: 0},
-                 {type: 'input',sec: 'datos', label: 'Dirección', index: 0},
+                
                  {type: 'input', sec: 'datos',label: 'Ciudad', index: 0},
                  {type: 'input', sec: 'datos',label: 'Estado', index: 0},
                  {type: 'input', sec: 'datos',label: 'País', index: 0},
