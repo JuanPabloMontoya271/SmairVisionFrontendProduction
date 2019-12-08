@@ -13,6 +13,7 @@ import Divider from '@material-ui/core/Divider';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import uuid from 'uuid'
+let gAuth;
 function Table (props){
     
     const datap = props.data
@@ -106,8 +107,14 @@ class PatientTable extends Component {
 
     constructor(props, context) {
       super(props, context);
-      
-      
+      console.log("session: ",localStorage.getItem('Session'))
+      axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/sesion/', {Session: localStorage.getItem('Session'), Device: localStorage.getItem('Device')}).then((res)=>{
+
+
+          console.log(JSON.parse(res.data.body))
+          console.log(res)
+
+      })
      
     
       this.state={
@@ -202,7 +209,7 @@ class PatientTable extends Component {
   
     }
     componentDidMount(){
-  
+        
         let pos;
         let location = navigator.geolocation.getCurrentPosition((position)=>{
      

@@ -53,7 +53,10 @@ validate =  () =>{
     
     if (res.data.auth){
       console.log(res.data.Sesion, res.data.device)
-      store.dispatch({type: 'auth_user', auth_user : {res:res.data.response, Sesion: res.data.Sesion, device: res.data.device}})
+      
+      localStorage.setItem('Session',res.data.Sesion)
+      localStorage.setItem('Device',res.data.device)
+    
       const a  = document.createElement('a')
       a.href = 'Patients2/'+res.data.Sesion+'/'+res.data.response
       a.click();  
