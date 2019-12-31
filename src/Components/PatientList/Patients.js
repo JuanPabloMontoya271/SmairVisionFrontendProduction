@@ -48,10 +48,10 @@ class PatientList extends Component{
       
     })
     this.Delete = this.Delete.bind(this)
-    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
-     
-      let resArray = res.data.response.Items
-   
+    axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globalget', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
+      console.log(res)
+      let resArray = JSON.parse(res.data.body).Items
+      
       resArray.sort(function (a,b){
         var dateA = new Date(a.date), dateB = new Date(b.date);
         return (dateB - dateA);
@@ -89,9 +89,9 @@ class PatientList extends Component{
           axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/dynamodb',{data: {id: newFileName,auth: true, file_name: newFileName, user:this.props.user, patient_id: this.props.patient, date: DateX}} ).then((res)=>{
     
 
-      axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
+      axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globalget', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
       
-        let resArray = res.data.response.Items
+        let resArray = JSON.parse(res.data.body).Items
       
         
         this.setState({patients:resArray, loading: 'hidden' })
@@ -198,9 +198,9 @@ swal({
 
       
  
-   axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globaldynamorequests', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
-        console.log(res.data.response.Items);
-              let resArray = res.data.response.Items
+   axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/globalget', {data: {key: 'patient_id', eq:this.props.patient, table: 'smairvisiondb'}}).then((res)=>{
+        
+              let resArray = JSON.parse(res.data.body).Items
               this.setState({patients:resArray })
               swal("Poof! Your imaginary file has been deleted!", {
                 icon: "success",

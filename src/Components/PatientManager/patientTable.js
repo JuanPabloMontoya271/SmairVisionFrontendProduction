@@ -107,14 +107,8 @@ class PatientTable extends Component {
 
     constructor(props, context) {
       super(props, context);
-      console.log("session: ",localStorage.getItem('Session'))
-      axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/sesion/', {Session: localStorage.getItem('Session'), Device: localStorage.getItem('Device')}).then((res)=>{
-
-
-          console.log(JSON.parse(res.data.body))
-          console.log(res)
-
-      })
+     
+  
      
     
       this.state={
@@ -335,16 +329,22 @@ class PatientTable extends Component {
         }}
         detailPanel={rowData => {
           
-          let rutas = [{label: 'Historia Clínica'}, {label: 'Nota de Evolución'}, {label: 'Nota de Interconsulta'},{label: 'Nota de Referencia/Traslado'}]
+          let rutas = [{label: "Análisis Especializado"},{label: 'Historia Clínica'}, {label: 'Nota de Evolución'}, {label: 'Nota de Interconsulta'},{label: 'Nota de Referencia/Traslado'}]
           let lista = rutas.map((item, key)=>{
 
 
             return (<ListItem key  = {key} button onClick = {()=>{
 
-
+                if (item.label!== "Análisis Especializado"){
                 let a  = document.createElement("a")
                 a.href = '/PdfGenerator/'+this.state.key + '/'+this.state.owner+ '/'+ rowData.patient+ '/'+ key
-                a.click()
+                a.click()}
+                else{
+                  let a  = document.createElement("a")
+                  a.href = '/Test/'+this.state.owner +'/'+ rowData.patient+ '/'
+                  a.click()
+
+                }
                
             }}>
                 <ListItemIcon>

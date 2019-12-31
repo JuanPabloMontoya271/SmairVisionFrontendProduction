@@ -16,7 +16,26 @@ cornerstoneWADOImageLoader.configure({
 
 //Add cornerstoneWADOImageLoaderCodecs.min and cornerstoneWADOImageLoaderWebWorker.min from 
 //cornerstone-wado-image-loader to ImageLoaderScripts in public folder
-
+try {
+  //Configures loaders for web to avoud error: unexpected token <-
+  cornerstoneWADOImageLoader.webWorkerManager.initialize({
+      maxWebWorkers: 8,
+      startWebWorkersOnDemand: true,
+      webWorkerPath: '/ImageLoaderScripts/cornerstoneWADOImageLoaderWebWorker.min.js',
+      webWorkerTaskPaths: [],
+      taskConfiguration: {
+          decodeTask: {
+              loadCodecsOnStartup: true,
+              initializeCodecsOnStartup: false,
+              codecsPath: '/ImageLoaderScripts/cornerstoneWADOImageLoaderCodecs.min.js',
+              usePDFJS: false,
+              strict: true
+          }
+      }
+  });
+} catch (error) {
+  throw new Error('cornerstoneWADOImageLoader is not loaded');
+}
 
 class Thumbnail extends Component {
 
@@ -61,6 +80,7 @@ class Thumbnail extends Component {
 
     //Loads image
     this.setState({loading:'loadingClass', unloaded:'noDisplay'})
+    console.log('loading', imgId)
     cornerstone.loadAndCacheImage(imgId).then((image)=>{
       //Displays image
       cornerstone.displayImage(this.dicomImg, image)
