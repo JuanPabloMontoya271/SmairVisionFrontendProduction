@@ -180,6 +180,7 @@ class ViewportDisplay extends Component {
 
 
   render() {
+    console.log(this.dicomImg)
     return (
        
        
