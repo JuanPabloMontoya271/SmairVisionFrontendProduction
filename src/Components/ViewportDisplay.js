@@ -156,7 +156,7 @@ class ViewportDisplay extends Component {
       
       store.dispatch({type: 'set_Image', Images: reference})
        
-       
+       console.log(image, "viewport", viewport)
       this.setState({
         imgData: image,
         imgRawData: image.data,
@@ -180,7 +180,7 @@ class ViewportDisplay extends Component {
 
 
   render() {
-    console.log(this.dicomImg)
+   
     return (
        
        

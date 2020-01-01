@@ -500,16 +500,28 @@ function BasicTextFields(props) {
 }
 function BasicTextFields2(props) {
   const classes = useStyles()
+  console.log(props.datos)
+  console.log('setState')
+  console.log(props.age)
   const [sampleState, setState] = useState({hola:'helloWorld', index: 0, done: false})
-  const [age, setAge]= useState({"Sexo": '', "Estado Civil":''})
+  const [age, setAge]= useState(props.age)
   const [open, setOpen]= useState(false)
-  const [checkBox, check]= useState({'Tetraciclina': false,'Amoxiciclina': false, 'Acitromicina': false, 'Ciprofloxacino': false,  'Doxiciclina': false, 'Codeína': false, 'Claritomicina': false, 'Sulfonamida': false, 'Penicilina': false})
-  const [Alergias, setAlergias] = useState({})
-  const [otros, setOtros]= useState({})
-  const [datos, setDatos]= useState({})
-  
-  console.log("MS:", age, "Input:",datos, "Check:", checkBox, "alergias", Alergias, "otros", otros , 'id: ', props.id);
-  
+  const [checkBox, check]= useState(props.checkBox !=null ?props.checkBox:{'Tetraciclina': false,'Amoxiciclina': false, 'Acitromicina': false, 'Ciprofloxacino': false,  'Doxiciclina': false, 'Codeína': false, 'Claritomicina': false, 'Sulfonamida': false, 'Penicilina': false})
+  const [Alergias, setAlergias] = useState(props.Alergias)
+  const [otros, setOtros]= useState(props.Otros)
+  const [datos, setDatos]= useState(props.datos)
+  const [datosAgrupados, setDatosAg] = useState({})
+ 
+  store.subscribe(()=>{
+    let img = store.getState().data[props.id]
+
+    console.log(img)
+   
+    
+    
+  })
+  console.log("MS:", age, "Input:",datos, "Check:", checkBox, "alergias", Alergias, "otros", otros , 'id: ', props.id, 'DF', datosAgrupados);
+ 
   let arr = props.props.inputs
   let form  = arr.map((item, key)=>{
  
@@ -523,9 +535,8 @@ function BasicTextFields2(props) {
                 <MuiThemeProvider theme = {theme}><TextField
             className ={classes.root}
             label={item.label}
-            value = {datos[item.label]!= null? datos[item.label]: ""}
-            onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value})
-            
+            value = {datos[item.label]!= null? datos[item.label]: "_"}
+            onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value!=""? evt.target.value:"*" });
             }}
          
             id="mui-theme-provider-standard-input"
@@ -548,6 +559,7 @@ function BasicTextFields2(props) {
        
         
         setAlergias({...Alergias,[item.index]:event.target.checked})
+       
       
       }
       return (<div key = {key}  style = {{paddingLeft: '31.5%', marginTop: '10px',textAlign: 'left'}}>
@@ -574,10 +586,12 @@ function BasicTextFields2(props) {
             
             let id = item
             const handleChange = name => event=>{
-              check({...checkBox, [name]: event.target.checked})}
+              check({...checkBox, [name]: event.target.checked})
+               }
             return ( <div key = {key}><FormControlLabel
             control={<Checkbox style ={{
               color: '#70C5FF',
+
             }}className = {classes.Check} checked  = {checkBox[id]!= null?checkBox[id]: false} onChange = {handleChange(id)}/>}
             label={item}
           /></div>)}
@@ -585,7 +599,7 @@ function BasicTextFields2(props) {
 
             return (
 
-              <MuiThemeProvider theme = {theme}><TextField
+              <MuiThemeProvider key = {key} theme = {theme}><TextField
               
               className ={classes.Unpadded}
               label={item}
@@ -633,8 +647,7 @@ function BasicTextFields2(props) {
     value = {datos[item.label]!= null? datos[item.label]: ""}
     multiline
     rows="4"
-    onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value})
-    
+    onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value});  
     }}
   
     id="mui-theme-provider-standard-input"
@@ -674,8 +687,7 @@ function BasicTextFields2(props) {
       }}
       
       value={age[item.label]}
-      onChange={(evt)=>setAge({...age,[item.label]: evt.target.value})
-      }
+      onChange={(evt)=>{setAge({...age,[item.label]: evt.target.value});}    }
     >
        <MenuItem value="">
         <em>None</em>
@@ -702,12 +714,12 @@ function BasicTextFields2(props) {
        {form}
        </div>
        <div> 
-
-       <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index})
+       <div style = {{position: 'absolute', right: '20vw', bottom: '20vh'}}>  <Button className  ={classes.button} onClick = {()=>{ let ots = otros != null? otros: "default";let al =Alergias!= null?Alergias: "default";let inp =datos!=null?datos:"default";axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/expediente',{req: 'POST',id:props.patient,patient : props.patient,data: {age, checkBox, inp, ots, Alergias }}).then((res)=>{alert("saved");let data = JSON.parse(res.data.res); setDatosAg(data); setAge(data.Item.name.age); setDatos(data.Item.name.inp); check(data.Item.name.checkBox);setOtros(data.Item.name.ots);setAlergias(data.Item.name.Alergias)})
        
+      }}>Save</Button> </div>
+       <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index}); 
       }}> <NavigateBeforeRoundedIcon/></Button></div>
-      <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<steps.length?sampleState.index +1: sampleState.index, done:sampleState.index<steps.length?false:true })
-       
+      <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<=steps.length? sampleState.index +1:sampleState.index, done: sampleState.index< steps.lenght?true:false});
       }}> <NavigateNextRoundedIcon/></Button></div>
        <div style = {{zIndex : '-1',overflowX: 'auto',position: "absolute", bottom: '0',left: '4vw',width : '94vw'}}>
        <Stepper  className= 'stepper' activeStep={sampleState.index} alternativeLabel>
@@ -735,23 +747,67 @@ function BasicTextFields2(props) {
 
    
 
-      return (<h1>Done!</h1>)
+      return (<div><h1>Done!</h1><Button onClick={(event)=>{
+        let html = []
+        html.push (pdf.head( pdf.bootstrap()+pdf.withTheme()))
+        html.push (pdf.sbody())
+       
+        html.push (pdf.h1(datos))
+        html.push (pdf.ebody())
+        
+        
+        fetch('https://v2018.api2pdf.com/chrome/html', {
+          method: 'post',
+          headers: headers,
+          body: JSON.stringify({html: html.join(''), inlinePdf: true, fileName: 'test.pdf' })
+        }).then(res=>res.json())
+          .then(
+            res => {
+              console.log(res);
+    
+              const url = window.URL.createObjectURL(new Blob([res.pdf]))
+              console.log(url);
+              window.open(res.pdf)
+              const link = document.createElement('a');
+    link.href = res.pdf;
+    document.body.appendChild(link);
+    link.download= 'hola.pdf';
+            } 
+         
+          
+          );
+        console.log("ejemplo",datosAgrupados)
+      
+      
+      }}>Export as PDF</Button><Button>Return Home</Button></div>)
    
   }
 
 }
 function BasicTextFields3(props) {
   const classes = useStyles()
+  console.log(props.datos)
+  console.log('setState')
+  console.log(props.age)
   const [sampleState, setState] = useState({hola:'helloWorld', index: 0, done: false})
-  const [age, setAge]= useState({"Sexo": '', "Estado Civil":''})
+  const [age, setAge]= useState(props.age)
   const [open, setOpen]= useState(false)
-  const [checkBox, check]= useState({'Tetraciclina': false,'Amoxiciclina': false, 'Acitromicina': false, 'Ciprofloxacino': false,  'Doxiciclina': false, 'Codeína': false, 'Claritomicina': false, 'Sulfonamida': false, 'Penicilina': false})
-  const [Alergias, setAlergias] = useState({})
-  const [otros, setOtros]= useState({})
-  const [datos, setDatos]= useState({})
-  
-  console.log("MS:", age, "Input:",datos, "Check:", checkBox, "alergias", Alergias, "otros", otros , 'id: ', props.id);
-  
+  const [checkBox, check]= useState(props.checkBox !=null ?props.checkBox:{'Tetraciclina': false,'Amoxiciclina': false, 'Acitromicina': false, 'Ciprofloxacino': false,  'Doxiciclina': false, 'Codeína': false, 'Claritomicina': false, 'Sulfonamida': false, 'Penicilina': false})
+  const [Alergias, setAlergias] = useState(props.Alergias)
+  const [otros, setOtros]= useState(props.Otros)
+  const [datos, setDatos]= useState(props.datos)
+  const [datosAgrupados, setDatosAg] = useState({})
+ 
+  store.subscribe(()=>{
+    let img = store.getState().data[props.id]
+
+    console.log(img)
+   
+    
+    
+  })
+  console.log("MS:", age, "Input:",datos, "Check:", checkBox, "alergias", Alergias, "otros", otros , 'id: ', props.id, 'DF', datosAgrupados);
+ 
   let arr = props.props.inputs
   let form  = arr.map((item, key)=>{
  
@@ -765,9 +821,8 @@ function BasicTextFields3(props) {
                 <MuiThemeProvider theme = {theme}><TextField
             className ={classes.root}
             label={item.label}
-            value = {datos[item.label]!= null? datos[item.label]: ""}
-            onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value})
-            
+            value = {datos[item.label]!= null? datos[item.label]: "_"}
+            onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value!=""? evt.target.value:"*" });
             }}
          
             id="mui-theme-provider-standard-input"
@@ -790,6 +845,7 @@ function BasicTextFields3(props) {
        
         
         setAlergias({...Alergias,[item.index]:event.target.checked})
+       
       
       }
       return (<div key = {key}  style = {{paddingLeft: '31.5%', marginTop: '10px',textAlign: 'left'}}>
@@ -816,10 +872,12 @@ function BasicTextFields3(props) {
             
             let id = item
             const handleChange = name => event=>{
-              check({...checkBox, [name]: event.target.checked})}
+              check({...checkBox, [name]: event.target.checked})
+               }
             return ( <div key = {key}><FormControlLabel
             control={<Checkbox style ={{
               color: '#70C5FF',
+
             }}className = {classes.Check} checked  = {checkBox[id]!= null?checkBox[id]: false} onChange = {handleChange(id)}/>}
             label={item}
           /></div>)}
@@ -827,7 +885,7 @@ function BasicTextFields3(props) {
 
             return (
 
-              <MuiThemeProvider theme = {theme}><TextField
+              <MuiThemeProvider key = {key} theme = {theme}><TextField
               
               className ={classes.Unpadded}
               label={item}
@@ -875,8 +933,7 @@ function BasicTextFields3(props) {
     value = {datos[item.label]!= null? datos[item.label]: ""}
     multiline
     rows="4"
-    onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value})
-    
+    onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value});  
     }}
   
     id="mui-theme-provider-standard-input"
@@ -916,8 +973,7 @@ function BasicTextFields3(props) {
       }}
       
       value={age[item.label]}
-      onChange={(evt)=>setAge({...age,[item.label]: evt.target.value})
-      }
+      onChange={(evt)=>{setAge({...age,[item.label]: evt.target.value});}    }
     >
        <MenuItem value="">
         <em>None</em>
@@ -944,12 +1000,12 @@ function BasicTextFields3(props) {
        {form}
        </div>
        <div> 
-
-       <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index})
+       <div style = {{position: 'absolute', right: '20vw', bottom: '20vh'}}>  <Button className  ={classes.button} onClick = {()=>{ let ots = otros != null? otros: "default";let al =Alergias!= null?Alergias: "default";let inp =datos!=null?datos:"default";axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/expediente',{req: 'POST',id:props.patient,patient : props.patient,data: {age, checkBox, inp, ots, Alergias }}).then((res)=>{alert("saved");let data = JSON.parse(res.data.res); setDatosAg(data); setAge(data.Item.name.age); setDatos(data.Item.name.inp); check(data.Item.name.checkBox);setOtros(data.Item.name.ots);setAlergias(data.Item.name.Alergias)})
        
+      }}>Save</Button> </div>
+       <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index}); 
       }}> <NavigateBeforeRoundedIcon/></Button></div>
-      <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<steps.length?sampleState.index +1: sampleState.index, done:sampleState.index<steps.length?false:true })
-       
+      <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<=steps.length? sampleState.index +1:sampleState.index, done: sampleState.index< steps.lenght?true:false});
       }}> <NavigateNextRoundedIcon/></Button></div>
        <div style = {{zIndex : '-1',overflowX: 'auto',position: "absolute", bottom: '0',left: '4vw',width : '94vw'}}>
        <Stepper  className= 'stepper' activeStep={sampleState.index} alternativeLabel>
@@ -977,24 +1033,67 @@ function BasicTextFields3(props) {
 
    
 
-      return (<h1>Done!</h1>)
+      return (<div><h1>Done!</h1><Button onClick={(event)=>{
+        let html = []
+        html.push (pdf.head( pdf.bootstrap()+pdf.withTheme()))
+        html.push (pdf.sbody())
+       
+        html.push (pdf.h1(datos))
+        html.push (pdf.ebody())
+        
+        
+        fetch('https://v2018.api2pdf.com/chrome/html', {
+          method: 'post',
+          headers: headers,
+          body: JSON.stringify({html: html.join(''), inlinePdf: true, fileName: 'test.pdf' })
+        }).then(res=>res.json())
+          .then(
+            res => {
+              console.log(res);
+    
+              const url = window.URL.createObjectURL(new Blob([res.pdf]))
+              console.log(url);
+              window.open(res.pdf)
+              const link = document.createElement('a');
+    link.href = res.pdf;
+    document.body.appendChild(link);
+    link.download= 'hola.pdf';
+            } 
+         
+          
+          );
+        console.log("ejemplo",datosAgrupados)
+      
+      
+      }}>Export as PDF</Button><Button>Return Home</Button></div>)
    
   }
 
 }
 function BasicTextFields4(props) {
-  const respaldo = {'Tetraciclina': false,'Amoxiciclina': false, 'Acitromicina': false, 'Ciprofloxacino': false,  'Doxiciclina': false, 'Codeína': false, 'Claritomicina': false, 'Sulfonamida': false, 'Penicilina': false}
   const classes = useStyles()
+  console.log(props.datos)
+  console.log('setState')
+  console.log(props.age)
   const [sampleState, setState] = useState({hola:'helloWorld', index: 0, done: false})
   const [age, setAge]= useState(props.age)
   const [open, setOpen]= useState(false)
-  const [checkBox, check]= useState(props.checkBox)
+  const [checkBox, check]= useState(props.checkBox !=null ?props.checkBox:{'Tetraciclina': false,'Amoxiciclina': false, 'Acitromicina': false, 'Ciprofloxacino': false,  'Doxiciclina': false, 'Codeína': false, 'Claritomicina': false, 'Sulfonamida': false, 'Penicilina': false})
   const [Alergias, setAlergias] = useState(props.Alergias)
   const [otros, setOtros]= useState(props.Otros)
   const [datos, setDatos]= useState(props.datos)
-  
-  console.log("MS:", age, "Input:",datos, "Check:", checkBox, "alergias", Alergias, "otros", otros , 'id: ', props.id);
-  
+  const [datosAgrupados, setDatosAg] = useState({})
+ 
+  store.subscribe(()=>{
+    let img = store.getState().data[props.id]
+
+    console.log(img)
+   
+    
+    
+  })
+  console.log("MS:", age, "Input:",datos, "Check:", checkBox, "alergias", Alergias, "otros", otros , 'id: ', props.id, 'DF', datosAgrupados);
+ 
   let arr = props.props.inputs
   let form  = arr.map((item, key)=>{
  
@@ -1008,9 +1107,8 @@ function BasicTextFields4(props) {
                 <MuiThemeProvider theme = {theme}><TextField
             className ={classes.root}
             label={item.label}
-            value = {datos[item.label]!= null? datos[item.label]: ""}
-            onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value})
-            
+            value = {datos[item.label]!= null? datos[item.label]: "_"}
+            onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value!=""? evt.target.value:"*" });
             }}
          
             id="mui-theme-provider-standard-input"
@@ -1033,6 +1131,7 @@ function BasicTextFields4(props) {
        
         
         setAlergias({...Alergias,[item.index]:event.target.checked})
+       
       
       }
       return (<div key = {key}  style = {{paddingLeft: '31.5%', marginTop: '10px',textAlign: 'left'}}>
@@ -1059,10 +1158,12 @@ function BasicTextFields4(props) {
             
             let id = item
             const handleChange = name => event=>{
-              check({...checkBox, [name]: event.target.checked})}
+              check({...checkBox, [name]: event.target.checked})
+               }
             return ( <div key = {key}><FormControlLabel
             control={<Checkbox style ={{
               color: '#70C5FF',
+
             }}className = {classes.Check} checked  = {checkBox[id]!= null?checkBox[id]: false} onChange = {handleChange(id)}/>}
             label={item}
           /></div>)}
@@ -1070,7 +1171,7 @@ function BasicTextFields4(props) {
 
             return (
 
-              <MuiThemeProvider theme = {theme}><TextField
+              <MuiThemeProvider key = {key} theme = {theme}><TextField
               
               className ={classes.Unpadded}
               label={item}
@@ -1118,8 +1219,7 @@ function BasicTextFields4(props) {
     value = {datos[item.label]!= null? datos[item.label]: ""}
     multiline
     rows="4"
-    onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value})
-    
+    onChange={(evt)=>{ setDatos({...datos,[item.label]: evt.target.value});  
     }}
   
     id="mui-theme-provider-standard-input"
@@ -1159,8 +1259,7 @@ function BasicTextFields4(props) {
       }}
       
       value={age[item.label]}
-      onChange={(evt)=>setAge({...age,[item.label]: evt.target.value})
-      }
+      onChange={(evt)=>{setAge({...age,[item.label]: evt.target.value});}    }
     >
        <MenuItem value="">
         <em>None</em>
@@ -1187,12 +1286,12 @@ function BasicTextFields4(props) {
        {form}
        </div>
        <div> 
-
-       <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index})
+       <div style = {{position: 'absolute', right: '20vw', bottom: '20vh'}}>  <Button className  ={classes.button} onClick = {()=>{ let ots = otros != null? otros: "default";let al =Alergias!= null?Alergias: "default";let inp =datos!=null?datos:"default";axios.post('https://9x835uk4f5.execute-api.us-east-2.amazonaws.com/Dev/expediente',{req: 'POST',id:props.patient,patient : props.patient,data: {age, checkBox, inp, ots, Alergias }}).then((res)=>{alert("saved");let data = JSON.parse(res.data.res); setDatosAg(data); setAge(data.Item.name.age); setDatos(data.Item.name.inp); check(data.Item.name.checkBox);setOtros(data.Item.name.ots);setAlergias(data.Item.name.Alergias)})
        
+      }}>Save</Button> </div>
+       <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index}); 
       }}> <NavigateBeforeRoundedIcon/></Button></div>
-      <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<steps.length?sampleState.index +1: sampleState.index, done:sampleState.index<steps.length?false:true })
-       
+      <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<=steps.length? sampleState.index +1:sampleState.index, done: sampleState.index< steps.lenght?true:false});
       }}> <NavigateNextRoundedIcon/></Button></div>
        <div style = {{zIndex : '-1',overflowX: 'auto',position: "absolute", bottom: '0',left: '4vw',width : '94vw'}}>
        <Stepper  className= 'stepper' activeStep={sampleState.index} alternativeLabel>
@@ -1220,12 +1319,57 @@ function BasicTextFields4(props) {
 
    
 
-      return (<h1>Done!</h1>)
+      return (<div><h1>Done!</h1><Button onClick={(event)=>{
+        let html = []
+        html.push (pdf.head( pdf.bootstrap()+pdf.withTheme()))
+        html.push (pdf.sbody())
+       
+        html.push (pdf.h1(datos))
+        html.push (pdf.ebody())
+        
+        
+        fetch('https://v2018.api2pdf.com/chrome/html', {
+          method: 'post',
+          headers: headers,
+          body: JSON.stringify({html: html.join(''), inlinePdf: true, fileName: 'test.pdf' })
+        }).then(res=>res.json())
+          .then(
+            res => {
+              console.log(res);
+    
+              const url = window.URL.createObjectURL(new Blob([res.pdf]))
+              console.log(url);
+              window.open(res.pdf)
+              const link = document.createElement('a');
+    link.href = res.pdf;
+    document.body.appendChild(link);
+    link.download= 'hola.pdf';
+            } 
+         
+          
+          );
+        console.log("ejemplo",datosAgrupados)
+      
+      
+      }}>Export as PDF</Button><Button>Return Home</Button></div>)
    
   }
 
 }
+function TextFields(props){
+  const classes = useStyles()
+  const [values, setValues] = useState(props.valores)
+  return ( <div>
+    <MuiThemeProvider theme = {theme}><TextField
+className ={classes.root}
+label={"label"/*item.label*/}
+  value = {""/*datos[item.label]!= null? datos[item.label]: " "*/}
+onChange={(evt)=>{}}
 
+id="mui-theme-provider-standard-input"
+/></MuiThemeProvider>
+</div>)
+}
 const theme2= createMuiTheme({
 
   palette: {
@@ -1329,8 +1473,8 @@ render(){
             steps = {['Datos Personales', 'Alergias', 'Otras Alergias', 'hkdsjhkdjhks', 'ksjdhksjhkdj', 'jaksjkasjahks','jashkajhskajshka', '19812098210982']
           }
             props = {{owner: this.state.owner,titles : ['Datos del Paciente'], inputs :[
-             
-               
+              {type: 'input',label: 'Nombre',sec: 'datos', index: 0},
+              {type: 'input',label: 'Apellido',sec: 'datos', index: 0},
                 {type: 'input',label: 'Edad',sec: 'datos', index: 0},
                  {type: 'MS', sec: 'datos',ops : ['Masculino', 'Femenino', 'Otro'],label: 'Sexo', index: 0},
                  {type: 'MS', sec: 'datos',ops : ['Soltero', 'Casado', 'Otro'],label: 'Estado Civil', index: 0},
@@ -1383,59 +1527,7 @@ render(){
             ] }}/>)
             break;
           case 1: 
-            children =(<BasicTextFields2 pat={this.state.patient} id = 'Nota_de_evolucion' props = {{owner: this.state.owner,titles : ['Datos del Paciente'], inputs :[
-              {type: 'input',label: 'Nombre', index : 0},
-               {type: 'input',label: 'Apellido', index: 0},
-                {type: 'input',label: 'Edad', index: 0},
-                 {type: 'MS', ops : ['Masculino', 'Femenino', 'Otro'],label: 'Sexo', index: 0},
-                 {type: 'MS', ops : ['Soltero', 'Casado', 'Otro'],label: 'Estado Civil', index: 0},
-                 {type: 'input', label: 'Dirección', index: 0},
-                 {type: 'input', label: 'Ciudad', index: 0},
-                 {type: 'input', label: 'Estado', index: 0},
-                 {type: 'input', label: 'País', index: 0},
-                 {type: 'input', label: 'Nacionalidad', index: 0},
-                
-                 {type: 'title', label: 'Alergias', index : 1},
-                 {type: 'B',id: 'med', label: 'El paciente presenta alergias',cons: 'No', index: 1},
-                 {type: 'CheckList', label: 'Alergias a Medicamentos ', lista: ['Tetraciclina','Amoxiciclina', 'Acitromicina', 'Ciprofloxacino',  'Doxiciclina', 'Codeína', 'Claritomicina', 'Sulfonamida', 'Penicilina'] ,index: 1},
-                 {type: 'CheckList', label: '', lista: ['Ibuporfeno','Lidocaína', 'Naproxeno', 'Oxicodona',  'Aspirina', 'Entromicina', 'Yodo', 'Morfina', 'Otros'] ,index: 1},
-                 {type: 'B', id : 'otras',label: 'El paciente presenta alergia a algún otro producto',cons: 'No', index: 2},
-                 {type: 'CheckList', label: 'Alergias a productos diarios', lista: ['Huevos','Leche', 'Productos Lacteos'] ,index: 2},
-                 {type: 'CheckList', label: '', lista: ['Comida de Mar', 'Almendras', 'Otros'] ,index: 2},
-                 {type: 'title', label: 'Historia Clínica', index : 3},
-                 {type: 'B',id: 'med', label: 'El paciente ha sido diagnosticado con alguno de los siguientes padecimientos: ',cons: 'No', index: 3},
-                 {type: 'CheckList', label: '', lista: ['Reflujo Acido','Coágulos de sangre', 'Enfermedad de la Arteria Coronaria', 'Epilepsia',  'Ataque al corazon', 'Ulcera Estomacal', 'Enfermedad de la tiroides'] ,index: 3},
-                 {type: 'CheckList', label: '', lista: ['Asma','Cancer', 'Diabetes', 'Ataque al corazon',  'Enfermedades de riñon', 'Infarto', 'Otros'] ,index: 3},
-                 {type: 'B',id: 'med', label: 'El paciente ha tenido procedimientos quirurjicos: ',cons: 'No', index: 4},
-                 {type: 'CheckList', label: '', lista: ['Angioplastía','Cirujía de Espalda', 'Bypass de corazón', 'Remplazo de cadera',  'Marcapaso', 'Vasectomía'] ,index: 4},
-                 {type: 'CheckList', label: '', lista: ['Apendectomía','Cirujía vesícula biliar', 'Reparación de Hernia', 'Cirujía de Rodilla',  'Amigdalectnomía', 'Otros'] ,index: 4},
-                 {type: 'B',id: 'med', label: 'Historial familiar: ',cons: 'No aplica', index: 5},
-                 {type: 'CheckList', label: '', lista: ['Alzheimer','Cáncer', 'Diabetes', 'Colesterol alto',  'Enfermedad del Riñón', 'Osteoporosis', 'Infartos'] ,index: 5},
-                 {type: 'CheckList', label: '', lista: ['Asma','Enfermedad de la Arteria Coronada', 'Ataque al corazón', 'Hipertensión',  'Migrañas', 'Otros'] ,index: 5},
-                 {type: 'B',id: 'med', styles :{hola:'hola'}, label: 'Uso de sustancias: ',cons: 'No aplica', index: 6},
-                
-                 {type: 'CheckList', label: 'Uso de sustancias', lista: ['Tabaco','Alcohol', 'Otros'] ,index: 6},
-                 {type: 'B',id: 'med', label: 'Uso de sustancias ilicitas: ',cons: 'No aplica', index: 6},
-                 {type: 'input', label: 'Uso de sustancias Ilicitas', index: 6},
-                 {type: 'input', label: 'Temperatura', index: 7},
-                 {type: 'input', label: 'Tensión Arterial', index: 7},
-                 {type: 'input', label: 'Frecuencia Cardiaca', index: 7},
-                 {type: 'input', label: 'Frecuencia Respiratoria', index: 7},
-               
-    
-                 {type: 'multiline_input', label: 'Datos Especificos', index: 7}, 
-                 {type: 'multiline_input', label: 'Resultados previos de Laboratorio', index: 7}, 
-                 {type: 'multiline_input', label: 'Resultados actuales de Laboratorio', index: 7}, 
-                 {type: 'multiline_input', label: 'Diagnosticos o Problemas Clínicos', index: 7},  
-                 {type: 'multiline_input', label: 'Pronóstico', index: 7},    
-                 {type: 'multiline_input', label: 'Indicación Terapeutica', index: 7},         
-                         
-    
-    
-                
-            
-            
-            ] }}/>)
+            children =(<TextFields/>)
           break;
           case 2:
             children = (<BasicTextFields3 id = 'Nota de Interconsulta' props = {{owner: this.state.owner,titles : ['Datos del Paciente'], inputs :[

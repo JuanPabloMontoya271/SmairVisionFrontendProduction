@@ -337,7 +337,8 @@ class PatientTable extends Component {
 
                 if (item.label!== "Análisis Especializado"){
                 let a  = document.createElement("a")
-                a.href = '/PdfGenerator/'+this.state.key + '/'+this.state.owner+ '/'+ rowData.patient+ '/'+ key
+                let int = parseInt(key, 10)-1
+                a.href = '/PdfGenerator/'+this.state.key + '/'+this.state.owner+ '/'+ rowData.patient+ '/'+ int
                 a.click()}
                 else{
                   let a  = document.createElement("a")
