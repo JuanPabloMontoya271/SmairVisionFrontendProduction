@@ -14,14 +14,15 @@ class Login extends Component{
               this.validate = this.validate.bind(this)
             this.state = {
               user : '',
-              pass : ''
+              pass : '',
+              query : this.props.match.params
             }
 
   
     }
   
     componentDidMount(){
-
+      console.log("query params", this.state.query)
 
       
     }
@@ -56,7 +57,7 @@ validate =  () =>{
       
       localStorage.setItem('Session',res.data.Sesion)
       localStorage.setItem('Device',res.data.device)
-    
+      
       const a  = document.createElement('a')
       a.href = 'Patients2/'+res.data.Sesion+'/'+res.data.response
       a.click();  

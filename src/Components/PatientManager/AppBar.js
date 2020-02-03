@@ -221,13 +221,14 @@ export default function MyAppBar() {
          let owner = patientData.owner
          let patient = patientData.patient
          let auth = 'auth/'
+         
          let a = document.createElement("a")
          switch (text) {
              case 'Perfil':
-                a.href = '/Perfil/'+auth+ owner+'/'
+                a.href = '/Perfil/'+patientData.key + '/'+patientData.owner
                  break;
             case 'Pacientes':
-                    a.href = '/Patients2/'+auth+ owner+'/'
+                    a.href = '/Patients2/'+patientData.key + '/'+patientData.owner
                     break;
             case 'Cerrar Sesion':
                 
@@ -278,7 +279,7 @@ export default function MyAppBar() {
       </List>
     </div>
   );
-
+console.log("patientData",patientData)
   return (
     <div className={classes.grow}>
       <AppBar className = {classes.root} style = {{backgroundColor: ' #70C5FF'}}position="static">

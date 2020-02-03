@@ -32,8 +32,10 @@ class HttpExample extends Component{
     lastX:0,
     lastY:0,
     visibility: false,
-    patient_id : this.props.match.params
-    
+    patient_id : this.props.match.params,
+    key: this.props.match.params.keys,
+    owner: this.props.match.params.key,
+    patient: this.props.match.params.patient
   
 
   }
@@ -46,16 +48,17 @@ class HttpExample extends Component{
   this.mouseUp =this.mouseUp.bind(this)
   
 
-  store.subscribe(()=>{
-    let img = store.getState().Images
-    img = img.slice(-4)
-   
-    this.setState({organ:store.getState().organ, Modality: store.getState().Modality, images: img})
-    
-  })
+
+  store.dispatch({type: 'auth_user', auth_user:{key: this.state.key, owner: this.state.owner}})
   }
   componentDidMount(){
-    
+    store.subscribe(()=>{
+      let img = store.getState().Images
+      img = img.slice(-4)
+     
+      this.setState({organ:store.getState().organ, Modality: store.getState().Modality, images: img})
+      
+    })
   }
   generatePDF(e) {
     fetch('https://v2018.api2pdf.com/chrome/html', {

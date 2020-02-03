@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route, Switch} from 'react-router-dom';
+import {Route, Switch, Redirect} from 'react-router-dom';
 import HttpExample from './Components/tests'
 import App from './App';
 
@@ -17,11 +17,12 @@ const AppRoutes = ()=>
           <Route path='/Patients2/:key/:owner' component = {PatientTable}/>
           <Route path  = '/Profile' component = {Profile}/>
         
-          <Route path ='/Test/:key/:param' component = {HttpExample}/>
+          <Route path ='/Test/:keys/:key/:param' component = {HttpExample}/>
           <Route path = '/PdfGenerator/:key/:owner/:patient/:ruta' component = {PdfGenerator}/>
-          <Route path = '/' component= {Login}/>
+          <Route path = '/' exact component= {Login}/>
+          
 
-          <Route  component = {Page404}/>
+          <Redirect from ="*" to= "/"/>
 
 
       </Switch>

@@ -13,95 +13,8 @@ import Divider from '@material-ui/core/Divider';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import uuid from 'uuid'
-let gAuth;
-function Table (props){
-    
-    const datap = props.data
-    
-    
-    const init = [{name: 'Monty', last_name: 'Montoya', owner: 'hola'}]
-    let data2 = [{'name': 'hola', 'last_name': 'hola'}]
-
-    const [state, setState] = React.useState({
-      columns: [
-        { title: 'Nombre', field: 'name' },
-        { title: 'Apellido', field: 'last_name' },
-      ],
-      data:datap ,
-    });
-    console.log("state",state.data);
-    
-    try {
-
-        return (<MaterialTable
-            title="Pacientes"
-        
-            columns={state.columns}
-            data={datap}
-            editable={{
-              onRowAdd: newData =>
-                new Promise(resolve => {
-                  setTimeout(() => {
-                    resolve();
-                    setState(prevState => {
-                      const data = [...prevState.data];
-                      data.push(newData);
-                      return { ...prevState, data };
-                    });
-                  }, 600);
-                }),
-            
-              onRowUpdate: (newData, oldData) =>
-                new Promise(resolve => {
-                  setTimeout(() => {
-                    resolve();
-                    if (oldData) {
-                      setState(prevState => {
-                        const data = [...prevState.data];
-                        data[data.indexOf(oldData)] = newData;
-                        return { ...prevState, data };
-                      });
-                    }
-                  }, 600);
-                }),
-              onRowDelete: oldData =>
-                new Promise(resolve => {
-                  setTimeout(() => {
-                    resolve();
-                    setState(prevState => {
-                      const data = [...prevState.data];
-                      data.splice(data.indexOf(oldData), 1);
-                      return { ...prevState, data };
-                    })
-                    
-                  }, 600);
-                }),
-            }}
-           
-            options={{
-              exportButton: true,
-              grouping: true
-            }}
-            detailPanel={rowData => {
-              
-              
-              return (
-             <div>
 
 
-             </div>
-              )
-            }}
-            onRowClick={(event, rowData, togglePanel) => { togglePanel(); }
-            }
-          />
-      );
-        
-    } catch (error) {
-        console.log(error);
-        
-    }
-        }
 
 class PatientTable extends Component {
 
@@ -199,11 +112,11 @@ class PatientTable extends Component {
   
       }
  
-    store.dispatch({type: 'auth_user', auth_user: {owner: this.state.owner}})
+      store.dispatch({type: 'auth_user', auth_user:{key: this.state.key, owner: this.state.owner}})
   
     }
     componentDidMount(){
-        
+      
         let pos;
         let location = navigator.geolocation.getCurrentPosition((position)=>{
      
@@ -342,7 +255,7 @@ class PatientTable extends Component {
                 a.click()}
                 else{
                   let a  = document.createElement("a")
-                  a.href = '/Test/'+this.state.owner +'/'+ rowData.patient+ '/'
+                  a.href = '/Test/'+this.state.key+'/'+this.state.owner +'/'+ rowData.patient+ '/'
                   a.click()
 
                 }

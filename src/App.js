@@ -24,6 +24,7 @@ class App extends Component {
     console.log(c)
     
     let visibility = 'visible'
+    console.log("current loc",currentloc)
     switch (currentloc) {
       case '/':
           visibility='hidden'
@@ -33,6 +34,7 @@ class App extends Component {
         visibility = 'visible'
         break;
     }
+    
     this.setState({visible: visibility})
 
   }

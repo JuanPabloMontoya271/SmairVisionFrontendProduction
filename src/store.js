@@ -68,4 +68,4 @@ const reducer  = (state, action) =>{
 
 
 
-export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user : '',visible: '', viewport : {},Images: [{img:[{id:'', op:1}]}]});
+export default createStore(reducer, {organ: '', Modality: '', idArray: '', auth_user :{},visible: '', viewport : {},Images: [{img:[{id:'', op:1}]}]});
