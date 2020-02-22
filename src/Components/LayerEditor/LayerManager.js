@@ -78,16 +78,16 @@ class LayerManager extends Component{
           return (
             <div key = {key2} style = {{width: '100%', height: '100%', paddingLeft: '5%'}}>
                 
-                <div style = {{display: 'inline-block'}}><p>Image {key2} : {item2.name}</p></div><div style ={{ marginLeft : '20px',alignItems: 'right',display: 'inline-block'}}><Button onClick ={()=>{
+                <div style = {{display: 'inline-block'}}><p>Image {key2} : {item2.name}</p></div><div style ={{ marginLeft : '20px',alignItems: 'right',display: 'inline-block'}}><Button variant = {NewImages[key].img[key2].segmented?"success": "danger" }onClick={()=>{
 
+NewImages[key].img[key2].segmented = !NewImages[key].img[key2].segmented;
 
+store.dispatch({type: 'set_Image', Images: this.state.images})
 
-
-
-                }}>Delete</Button></div>
+                }}>Segment</Button></div>
                 <div style = {{textAlign: 'center'}}><Slider defaultValue = {50} valueLabelDisplay = 'on' marks = {marks} onChangeCommitted = {(evt, value)=>{
                         NewImages[key].img[key2].op = value/100;
-                     
+                       
                         this.setState({images: NewImages})
                         store.dispatch({type: 'set_Image', Images: this.state.images})
                 }} onChange = {(evt, value)=>{

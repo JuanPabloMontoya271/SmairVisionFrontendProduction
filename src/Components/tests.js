@@ -207,7 +207,7 @@ mouseWheel(e){
         
         
         let imageArray = item.img.map((item2, key2)=>{
-          
+      
           
           return (
 
@@ -226,7 +226,7 @@ mouseWheel(e){
               body[0].style.overflow = 'scroll'
             }}>
              
-          <ViewportDisplay reference = {images} key1 ={key} key2 = {key2} viewport = {item.viewport} prueba = {this.state.prueba} display = '1' link = {[item2.id]} />
+          <ViewportDisplay reference = {images} key1 ={key} key2 = {key2} segmented = {item2.segmented} viewport = {item.viewport} prueba = {this.state.prueba} display = '1' link = {[item2.id]} />
             <Fade in = { this.state.visibility}>
 
             <div style = {{borderBottom: 'solid 3px #70C5FF',borderRight:'solid 3px #70C5FF',borderLeft: 'solid 3px #70C5FF',position : 'absolute', width : '100%', height: '10%', backgroundColor : 'blue',left: 0, bottom: '0px'}}>

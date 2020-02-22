@@ -14,7 +14,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import  {green}  from '@material-ui/core/colors'
-
+import GenerateReport from './GenerateReport.js'
 import MaterialTable from 'material-table';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -433,7 +433,7 @@ function BasicTextFields(props) {
         }}>Save</Button> </div>
          <div style = {{position: 'absolute', left: '20vw', bottom: '50vh'}}>  <Button className  ={classes.button} onClick = {()=>{ setState({index:sampleState.index>0? sampleState.index -1:sampleState.index}); 
         }}> <NavigateBeforeRoundedIcon/></Button></div>
-        <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index:sampleState.index<=steps.length? sampleState.index +1:sampleState.index, done: sampleState.index< steps.lenght?true:false});
+        <div style = {{position: 'absolute', left: '78vw', bottom: '50vh'}}> <Button className  ={classes.button} onClick = {()=>{setState({index: sampleState.index +1, done:sampleState.index>=steps.length-1?true:false});
         }}> <NavigateNextRoundedIcon/></Button></div>
          <div style = {{zIndex : '-1',overflowX: 'auto',position: "absolute", bottom: '0',left: '4vw',width : '94vw'}}>
          <Stepper  className= 'stepper' activeStep={sampleState.index} alternativeLabel>
@@ -461,39 +461,7 @@ function BasicTextFields(props) {
 
      
 
-        return (<div><h1>Done!</h1><Button onClick={(event)=>{
-          let html = []
-          html.push (pdf.head( pdf.bootstrap()+pdf.withTheme()))
-          html.push (pdf.sbody())
-         
-          html.push (pdf.h1(datos))
-          html.push (pdf.ebody())
-          
-          
-          fetch('https://v2018.api2pdf.com/chrome/html', {
-            method: 'post',
-            headers: headers,
-            body: JSON.stringify({html: html.join(''), inlinePdf: true, fileName: 'test.pdf' })
-          }).then(res=>res.json())
-            .then(
-              res => {
-                console.log(res);
-      
-                const url = window.URL.createObjectURL(new Blob([res.pdf]))
-                console.log(url);
-                window.open(res.pdf)
-                const link = document.createElement('a');
-      link.href = res.pdf;
-      document.body.appendChild(link);
-      link.download= 'hola.pdf';
-              } 
-           
-            
-            );
-          console.log("ejemplo",datosAgrupados)
-        
-        
-        }}>Export as PDF</Button><Button>Return Home</Button></div>)
+        return (<div style = {{height: "75vh", width:  '100vw'}}><GenerateReport/></div>)
      
     }
 

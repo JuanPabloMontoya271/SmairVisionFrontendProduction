@@ -41,7 +41,8 @@ class ViewportDisplay extends Component {
       dimensions: {},
       viewport : {},
       enable: false,
-      Images: []
+      Images: [],
+      segmented: this.props.segmented
 
     }
 
@@ -78,7 +79,7 @@ class ViewportDisplay extends Component {
     } catch (error) {
       
     }
-    
+      this.setState({segmented: next_props.segmented})
     
     
   }
@@ -91,7 +92,204 @@ class ViewportDisplay extends Component {
   componentDidMount(){
 
     //Enables HTML5 element to use cornerstone
-    
+    element= this.dicomImg
+    let self = this
+    function onImageRendered(e) {
+
+
+
+      console.log('rendered');
+
+      const eventData = e.detail;
+
+      // set the canvas context to the image coordinate system
+      cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
+
+      // NOTE: The coordinate system of the canvas is in image pixel space.  Drawing
+      // to location 0,0 will be the top left of the image and rows,columns is the bottom
+      // right.
+
+      let image = eventData.image
+      let w = image.columns
+      let h = image.rows
+      const ctx = eventData.canvasContext;
+      let index;
+      //console.log(context);
+      let pixelsCanvas= ctx.getImageData(0,0,w, h);
+      let data = pixelsCanvas.data
+
+      let sum ;
+      let max = image.maxPixelValue;
+      let min = image.minPixelValue;
+      let pratio = (max -min)/255;
+      let pmax = 160 * pratio;
+      let pmin = 120 * pratio;
+      let pmax2 = 180 * pratio;
+      let pmin2 = 161 * pratio;
+      let pmax3 = 230 * pratio;
+      let pmin3 = 181 * pratio;
+      let pmax4 = 255 * pratio;
+      let pmin4 = 231 * pratio;
+      let pmax5 = 159 * pratio;
+      let pmin5 = 110 * pratio;
+      let pmax6 = 109 * pratio;
+      let pmin6 = 80 * pratio;
+      let pmax7 = 79 * pratio;
+      let pmin7 = 50 * pratio;
+      let pmax8 =  49* pratio;
+      let pmin8 = 20 * pratio;
+      let pmax9=  19* pratio;
+      let pmin9 =  0* pratio;
+
+
+
+
+
+
+      // console.log(pixelsCanvas);
+      // console.log(w,h);
+      // console.log(w*h*4);
+
+      function getOT(){
+        for (let i = 0 ; i< data.length; i += 4){
+
+
+
+          if(true){
+            data [i] = 255
+            data [i+1]=0
+            data[i+2]=0
+          }
+        }
+      }
+      console.log("segmented",self.state)
+      if (self.state.segmented){
+       
+      segment();
+      }
+
+      function segment(){
+
+        for (let i = 0 ; i< data.length; i += 4){
+              sum =  (data[i] + data[i+1] + data[i+2])/3
+
+             if (sum < pmax && sum >pmin){
+
+               data[i]     = 255   // red
+               data[i + 1] = 0 // green
+               data[i + 2] = 0// blue
+
+
+
+             }
+             if (sum < pmax2 && sum >pmin2){
+
+               data[i]     = 0   // red
+               data[i + 1] = 255 // green
+               data[i + 2] = 0// blue
+
+
+
+             }
+             if (sum < pmax3 && sum >pmin3){
+
+               data[i]     = 0   // red
+               data[i + 1] = 0 // green
+               data[i + 2] = 255// blue
+
+
+
+             }
+             if (sum < pmax3 && sum >pmin3){
+
+               data[i]     = 80   // red
+               data[i + 1] = 0 // green
+               data[i + 2] = 255// blue
+
+
+
+             }
+             if (sum < pmax3 && sum >pmin3){
+
+               data[i]     = 0   // red
+               data[i + 1] = 0 // green
+               data[i + 2] = 255// blue
+
+
+
+             }
+             if (sum < pmax4 && sum >pmin4){
+
+               data[i]     = 80   // red
+               data[i + 1] = 0 // green
+               data[i + 2] = 255// blue
+
+
+
+             }
+
+             if (sum < pmax5 && sum >pmin5){
+
+               data[i]     = 0   // red
+               data[i + 1] = 200 // green
+               data[i + 2] = 100// blue
+
+
+
+             }
+             if (sum < pmax6 && sum >pmin6){
+
+               data[i]     = 80   // red
+               data[i + 1] = 50 // green
+               data[i + 2] = 255// blue
+
+
+
+             }
+
+             if (sum < pmax7 && sum >pmin7){
+
+               data[i]     = 60   // red
+               data[i + 1] = 200 // green
+               data[i + 2] = 100// blue
+
+
+
+             }
+             if (sum < pmax8 && sum >pmin8){
+
+               data[i]     = 100  // red
+               data[i + 1] = 100 // green
+               data[i + 2] = 200// blue
+
+
+
+             }
+             if (sum < pmax9 && sum >pmin9){
+
+               data[i]     = 80  // red
+               data[i + 1] = 200 // green
+               data[i + 2] = 20// blue
+
+
+
+             }
+
+
+        }
+
+        ctx.putImageData(pixelsCanvas, 0, 0);
+
+
+      }
+
+      // document.getElementById('topright').textContent = "Render Time:" + eventData.renderTimeInMs + " ms";
+      // document.getElementById('bottomleft').textContent = "WW/WL:" + Math.round(eventData.viewport.voi.windowWidth) + "/" + Math.round(eventData.viewport.voi.windowCenter);
+      // document.getElementById('bottomright').textContent = "Zoom:" + eventData.viewport.scale.toFixed(2);
+  }
+  element.addEventListener('cornerstoneimagerendered', onImageRendered);
+
+  
     switch (this.props.display) {
         case '1':
             

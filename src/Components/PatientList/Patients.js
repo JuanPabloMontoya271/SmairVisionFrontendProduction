@@ -147,7 +147,7 @@ class PatientList extends Component{
                     div.style.border = 'dashed 3px gray'
                     console.log(e.target.id);
                     let rndm = Math.random()*10
-                    let imgObj = {id:base_url +item.id,name: item.id, op: .5}
+                    let imgObj = {id:base_url +item.id,name: item.id, op: .5, segmented: true}
                       let obj = JSON.stringify(imgObj)
                     e.dataTransfer.setData('obj',obj );
                   }} onDragEnd = {(e)=>{
@@ -158,9 +158,13 @@ class PatientList extends Component{
                   }} onClick= {()=>{
                     
                       let rndm = Math.random()*10
-                      let imgObj = {imgId:rndm+item.id,viewport: {scale: .5}, img:[{id:base_url +item.id,name: item.id, op: .5}]}
+                      let imgObj = {imgId:rndm+item.id,viewport: {scale: .5}, img:[{id:base_url +item.id,name: item.id, op: .5, segmented: true}]}
                       Images.push(imgObj)
                       store.dispatch({type: 'set_Image', 'Images': Images})
+
+
+
+                      
 
                       
                        
